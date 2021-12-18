@@ -1,11 +1,11 @@
 [package]
-name = "calcit_std"
+name = "triadica"
 version = "0.0.1"
 authors = ["jiyinyiyong <jiyinyiyong@gmail.com>"]
 edition = "2018"
 
 [lib]
-name = "calcit_std"
+name = "triadica"
 path = "src/lib.rs"
 crate-type = ["dylib"] # Creates dynamic lib
 
