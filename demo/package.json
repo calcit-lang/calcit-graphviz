@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "render": "dot -Tsvg -Gfontcolor=red -Glabel='My demo' input/demo.dot -o output/demo.svg"
+  },
+  "dependencies": {
+    "vite": "^2.7.3"
+  }
+}
