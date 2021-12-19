@@ -16,11 +16,6 @@
         |digraph $ quote
           defn digraph (options & children)
             str &newline "\"digraph {" (render-option-lines options) &newline (join-str children &newline) &newline "\"}" &newline
-        |edge $ quote
-          defn edge (from to ? options)
-            if (empty? options)
-              str "\"  " $ str (wrap from) "\" -> " (wrap to)
-              str "\"  " $ str-spaced (wrap from) "\"->" (wrap to) "\"[" (render-options options) "\"]"
         |node $ quote
           defn node (name ? options)
             if (empty? options)
@@ -39,6 +34,14 @@
           defn str-spaced (& children) (join-str children "\" ")
         |render-dot $ quote
           defn render-dot $
+        |arrow $ quote
+          defn arrow (from to ? options)
+            if (empty? options)
+              str "\"  " $ str (wrap from) "\" -> " (wrap to)
+              str "\"  " $ str-spaced (wrap from) "\"->" (wrap to) "\"[" (render-options options) "\"]"
+        |graph $ quote
+          defn graph (options & children)
+            str &newline "\"graph {" (render-option-lines options) &newline (join-str children &newline) &newline "\"}" &newline
         |render-options $ quote
           defn render-options (o)
             -> o (.to-list)
@@ -51,6 +54,11 @@
         |render-dot-file $ quote
           defn render-dot-file (name)
             &call-dylib-edn (get-dylib-path "\"/dylibs/libtriadica") "\"render_dot_file" name
+        |connect $ quote
+          defn connect (from to options)
+            if (empty? options)
+              str "\"  " $ str (wrap from) "\" -- " (wrap to)
+              str "\"  " $ str-spaced (wrap from) "\"--" (wrap to) "\"[" (render-options options) "\"]"
     |triadica.test $ {}
       :ns $ quote
         ns triadica.test $ :require
@@ -77,20 +85,56 @@
     |triadica.main $ {}
       :ns $ quote
         ns triadica.main $ :require
-          triadica.core :refer $ digraph node edge
+          triadica.core :refer $ digraph node arrow connect
           calcit.std.process :refer $ execute!
       :defs $ {}
         |main! $ quote
           defn main! () $ render-demo!
-        |reload! $ quote
-          defn reload! () $ render-demo!
+        |make-data-tree $ quote
+          defn make-data-tree (tree parent-id)
+            if (list? tree)
+              -> tree
+                map $ fn (child)
+                  let
+                      child-id $ if (number? child) (turn-string child) (gen-counter-id!)
+                    wo-log $ str (make-data-tree child child-id) &newline
+                      node parent-id $ {} (:shape :diamond) (:style :filled) (:fillcolor :cyan) (:fontcolor :darkturquoise)
+                      arrow parent-id child-id $ {}
+                .join-str &newline
+              node (turn-string tree)
+                {} (:style :filled) (:fillcolor :darkgoldenrod1)
+        |tree-data $ quote
+          def tree-data $ quote
+              0 1 2
+              ((3 4 5) (6 7 8) (9 10 11))
+                (((12 13 14) (15 16 17) (18 19 20)) ((21 22 23) (24 25 26) (27 28 29)) ((30 31 32) (33 34 35) (36 37 38)))
+                  ((39 40 41) (42 43 44) (45 46 47))
+                    (48 49 50) (51 52 53) (54 55 56)
+                    (57 58 59) (60 61 62) (63 64 65)
+                  (66 67 68) (69 70 71) (72 73 74)
+                75 76 77
+              78 79
+        |make-tree-demo $ quote
+          defn make-tree-demo () (reset! *counter 0) (; println "\"data" tree-data)
+            wo-log $ digraph nil
+              make-data-tree tree-data $ gen-counter-id!
+        |concat-them $ quote
+          defn concat-them (children) (concat & children)
+        |*counter $ quote (defatom *counter 0)
+        |gen-counter-id! $ quote
+          defn gen-counter-id! ()
+            reset! *counter $ inc @*counter
+            str "\"p" @*counter
         |render-demo! $ quote
           defn render-demo! ()
-            write-file "\"output/demo.dot" $ w-log
+            ; write-file "\"output/demo.dot" $ w-log
               digraph nil (node "\"A")
                 node "\"B" $ {} (:color :red) (:shape :diamond)
                 node "\"C" $ {} (:style :filled) (:fillcolor :red) (:fontcolor :white) (:color :none)
-                edge "\"A" "\"B" $ {} (:arrowhead :inv)
-                edge "\"A" "\"C" $ {}
-                edge "\"A" "\"E" $ {}
-            println $ execute! ([] "\"dot" "\"-T" "\"svg" "\"output/demo.dot" "\"-o" "\"output/demo.svg")
+                arrow "\"A" "\"B" $ {} (:arrowhead :inv)
+                arrow "\"A" "\"C" $ {}
+                arrow "\"A" "\"E" $ {}
+            write-file "\"output/demo.dot" $ make-tree-demo
+            println "\"result:" $ execute! ([] "\"dot" "\"-T" "\"svg" "\"output/demo.dot" "\"-o" "\"output/demo.svg")
+        |reload! $ quote
+          defn reload! () $ render-demo!
