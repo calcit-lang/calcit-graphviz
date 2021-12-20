@@ -12,3 +12,9 @@
 .compact-inc.cirru
 
 /dylibs/
+
+node_modules
+
+demo/output
+
+output/

@@ -1,22 +1,10 @@
-## Workflow
+## Triadica
 
-> Rust library for Calcit runtime.
-
-API 设计: https://github.com/calcit-lang/calcit_runner.rs/discussions/116 .
+> render DOT file that can be handled by Graphviz
 
 ### Usages
 
-APIs:
-
-```cirru
-lib.core/path-exists? a
-```
-
-Install to `~/.config/calcit/modules/`, compile and provide `*.{dylib,so}` file with `./build.sh`.
-
-### Workflow
-
-https://github.com/calcit-lang/dylib-workflow
+_TODO_
 
 ### License
 

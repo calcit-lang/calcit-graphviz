@@ -1,5 +1,4 @@
 use cirru_edn::Edn;
-use std::path::Path;
 
 #[no_mangle]
 pub fn abi_version() -> String {
@@ -7,14 +6,14 @@ pub fn abi_version() -> String {
 }
 
 #[no_mangle]
-pub fn path_exists(args: Vec<Edn>) -> Result<Edn, String> {
+pub fn render_dot_file(args: Vec<Edn>) -> Result<Edn, String> {
   if args.len() == 1 {
-    if let Edn::Str(name) = &args[0] {
-      Ok(Edn::Bool(Path::new(&**name).exists()))
+    if let Edn::Map(_data) = &args[0] {
+      Ok(Edn::Str("TODO".into()))
     } else {
-      Err(format!("path-exists? expected 1 filename, got {:?}", args))
+      Err(format!("render-dot-file! expected 1 piece of data, got {:?}", args))
     }
   } else {
-    Err(format!("path-exists? expected 1 arg, got {:?}", args))
+    Err(format!("render-dot-file! expected 1 arg, got {:?}", args))
   }
 }
