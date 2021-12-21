@@ -4,8 +4,25 @@
     overscroll-behavior-x: none;
     overscroll-behavior-y: none;
   }
+
+  #demo {
+    margin: auto;
+    text-align: center;
+    display: inline-block;
+    max-width: 100vw;
+    max-height: 100vh;
+  }
+
+  .box {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 </style>
 <script type="module" src="./main.mjs"></script>
-<div>
+<div class="box">
   <img id="demo" src="">
 </div>
