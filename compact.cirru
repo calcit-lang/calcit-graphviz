@@ -96,7 +96,7 @@
               -> tree
                 map $ fn (child)
                   let
-                      child-id $ if (number? child) (turn-string child) (gen-counter-id!)
+                      child-id $ if (string? child) (turn-string child) (gen-counter-id!)
                     wo-log $ str (make-data-tree child child-id) &newline
                       node parent-id $ {} (:shape :diamond) (:style :filled) (:fillcolor :cyan) (:fontcolor :darkturquoise)
                       arrow parent-id child-id $ {}
@@ -115,9 +115,10 @@
                 75 76 77
               78 79
         |make-tree-demo $ quote
-          defn make-tree-demo () (reset! *counter 0) (; println "\"data" tree-data)
-            wo-log $ digraph nil
-              make-data-tree tree-data $ gen-counter-id!
+          defn make-tree-demo (vec-tree) (reset! *counter 0) (; println "\"data" vec-tree)
+            wo-log $ digraph ({})
+              node "\"graph" $ {} (:ranksep 0.3) (:nodesep 0.25) (:splines :line)
+              make-data-tree vec-tree $ gen-counter-id!
         |concat-them $ quote
           defn concat-them (children) (concat & children)
         |*counter $ quote (defatom *counter 0)
@@ -134,7 +135,20 @@
                 arrow "\"A" "\"B" $ {} (:arrowhead :inv)
                 arrow "\"A" "\"C" $ {}
                 arrow "\"A" "\"E" $ {}
-            write-file "\"output/demo.dot" $ make-tree-demo
-            println "\"result:" $ execute! ([] "\"dot" "\"-T" "\"svg" "\"output/demo.dot" "\"-o" "\"output/demo.svg")
+            apply-args
+                []
+                , 0
+              fn (acc n)
+                if (< n 10)
+                  do
+                    ; println $ parse-cirru (&format-ternary-tree acc)
+                    write-file "\"output/demo.dot" $ make-tree-demo
+                      wo-log $ first
+                        parse-cirru $ &format-ternary-tree acc
+                    println n "\"result:" $ execute!
+                      [] "\"dot" "\"-T" "\"svg" "\"-K" "\"dot" "\"output/demo.dot" "\"-o" $ str "\"output/demo" n "\".svg"
+                    recur (conj acc n) (inc n)
+                  , nil
+            ; write-file "\"output/demo.dot" $ make-tree-demo tree-data
         |reload! $ quote
           defn reload! () $ render-demo!
