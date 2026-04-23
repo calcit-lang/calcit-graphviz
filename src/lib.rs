@@ -1,11 +1,16 @@
 use cirru_edn::Edn;
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub fn abi_version() -> String {
-  String::from("0.0.6")
+  String::from("0.0.9")
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
+pub fn edn_version() -> String {
+  cirru_edn::version().to_owned()
+}
+
+#[unsafe(no_mangle)]
 pub fn render_dot_file(args: Vec<Edn>) -> Result<Edn, String> {
   if args.len() == 1 {
     if let Edn::Map(_data) = &args[0] {
