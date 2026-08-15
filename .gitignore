@@ -18,3 +18,5 @@ node_modules
 demo/output
 
 output/
+
+.DS_Store
