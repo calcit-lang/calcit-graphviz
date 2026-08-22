@@ -17,11 +17,14 @@ pub fn render_dot_file(args: Vec<Edn>) -> Result<Edn, String> {
             Ok(Edn::Str("TODO".into()))
         } else {
             Err(format!(
-                "render-dot-file! expected 1 piece of data, got {:?}",
-                args
+                "render-dot-file! expected a map argument, got {:?}",
+                args[0]
             ))
         }
     } else {
-        Err(format!("render-dot-file! expected 1 arg, got {:?}", args))
+        Err(format!(
+            "render-dot-file! expected 1 arg, got {}",
+            args.len()
+        ))
     }
 }
