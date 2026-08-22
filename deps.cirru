@@ -1,3 +1,4 @@
 
-{} (:calcit-version |0.13.16)
-  :dependencies $ {}
+{} (:calcit-version |0.13.29)
+  :version |0.0.1
+  :dependencies $ {} (|calcit-lang/calcit.std |main)

@@ -20,3 +20,4 @@ demo/output
 output/
 
 .DS_Store
+js-out/

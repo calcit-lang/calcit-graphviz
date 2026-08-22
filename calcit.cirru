@@ -1,10 +1,12 @@
 
-{} (:about "|Machine-generated snapshot. Do not edit directly — changes will be overwritten. Use `cr query` to inspect and `cr edit`/`cr tree` to modify. Run `cr docs agents --full` first. Manual edits must follow format and schema conventions, then run `cr edit format`.") (:package |triadica) (:version |0.0.1)
+{} (:about "|Machine-generated snapshot. Do not edit directly — changes will be overwritten. Use `calcit query` to inspect and `calcit edit`/`calcit tree` to modify. Run `calcit docs agents --full` first. Manual edits must follow format and schema conventions, then run `calcit edit format`.") (:package |triadica)
   :entries $ {}
     :default $ {} (:description |) (:init-fn 'triadica.main/main!) (:mode :native) (:reload-fn 'triadica.main/reload!)
+      :feature-policy $ {}
       :modules $ [] |calcit.std/
       :type-slots $ {}
     :run-tests $ {} (:description |) (:init-fn 'triadica.test/run-tests) (:mode :native) (:reload-fn 'triadica.test/run-tests)
+      :feature-policy $ {}
       :modules $ []
       :type-slots $ {}
   :files $ {}
@@ -97,8 +99,7 @@
     |triadica.main $ %{} 'FileEntry
       :defs $ {}
         |*counter $ %{} 'CodeEntry (:doc |)
-          :code $ quote
-              defatom *counter 0
+          :code $ quote (defatom *counter 0)
           :examples $ []
           :schema $ :: 'Dynamic
         |concat-them $ %{} 'CodeEntry (:doc |)
