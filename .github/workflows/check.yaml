@@ -11,9 +11,9 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: calcit-lang/setup-calcit@v1
+      - uses: calcit-lang/setup-calcit@v1.3.0
 
       - name: Validate Calcit snapshot
         run: |
@@ -22,17 +22,5 @@ jobs:
           git diff --exit-code -- calcit.cirru
           calcit calcit.cirru --check-only
           calcit calcit.cirru --entry run-tests --check-only
+          calcit calcit.cirru --entry run-tests
           calcit calcit.cirru js
-
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: stable
-
-      - uses: Swatinem/rust-cache@v2
-
-      - name: Setup Graphviz
-        uses: ts-graphviz/setup-graphviz@v2
-
-      - run: cargo build --release
-
-      - run: mkdir -p dylibs/ && ls target/release/ && cp -v target/release/*.* dylibs/

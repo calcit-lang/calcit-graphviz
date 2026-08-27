@@ -48,23 +48,14 @@
                 str "|  " (wrap name) "| [ " (render-options options) "| ]"
           :examples $ []
           :schema $ :: 'Dynamic
-        |render-dot $ %{} 'CodeEntry (:doc |)
-          :code $ quote
-            defn render-dot $
-          :examples $ []
-          :schema $ :: 'Dynamic
-        |render-dot-file $ %{} 'CodeEntry (:doc |)
-          :code $ quote
-            defn render-dot-file (name)
-              &call-dylib-edn (get-dylib-path |/dylibs/libtriadica) |render_dot_file name
-          :examples $ []
-          :schema $ :: 'Dynamic
         |render-option-lines $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn render-option-lines (options)
               if (empty? options) | $ -> options (.to-list)
                 map $ fn (pair)
-                  str (first pair) "| = " $ last pair
+                  str
+                    -> (first pair) (.unwrap)
+                    , "| = " $ -> (last pair) (.unwrap)
                 .join-str &newline
           :examples $ []
           :schema $ :: 'Dynamic
@@ -74,9 +65,9 @@
               -> o (.to-list)
                 map $ fn (entry)
                   str
-                    turn-string $ first entry
+                    turn-string $ -> (first entry) (.unwrap)
                     , |= $ wrap
-                      turn-string $ last entry
+                      turn-string $ -> (last entry) (.unwrap)
                 .join-str "| "
           :examples $ []
           :schema $ :: 'Dynamic
@@ -92,10 +83,7 @@
           :examples $ []
           :schema $ :: 'Dynamic
       :ns $ %{} 'NsEntry (:doc |)
-        :code $ quote
-          ns triadica.core $ :require
-            triadica.$meta :refer $ calcit-dirname
-            triadica.util :refer $ get-dylib-path
+        :code $ quote (ns triadica.core)
     |triadica.main $ %{} 'FileEntry
       :defs $ {}
         |*counter $ %{} 'CodeEntry (:doc |)
@@ -199,35 +187,12 @@
         |run-tests $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn run-tests () (println "|%%%% test for lib") (println calcit-filename calcit-dirname)
-              println $ render-dot-file
+              println $ digraph
                 {} $ :type :graph
           :examples $ []
           :schema $ :: 'Dynamic
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote
           ns triadica.test $ :require
-            triadica.core :refer $ render-dot-file
-            triadica.$meta :refer $ calcit-dirname calcit-filename
-    |triadica.util $ %{} 'FileEntry
-      :defs $ {}
-        |get-dylib-ext $ %{} 'CodeEntry (:doc |)
-          :code $ quote
-            defmacro get-dylib-ext () $ case-default (&get-os) |.so (:macos |.dylib) (:windows |.dll)
-          :examples $ []
-          :schema $ :: 'Dynamic
-        |get-dylib-path $ %{} 'CodeEntry (:doc |)
-          :code $ quote
-            defn get-dylib-path (p)
-              str (or-current-path calcit-dirname) p $ get-dylib-ext
-          :examples $ []
-          :schema $ :: 'Dynamic
-        |or-current-path $ %{} 'CodeEntry (:doc |)
-          :code $ quote
-            defn or-current-path (p)
-              if (blank? p) |. p
-          :examples $ []
-          :schema $ :: 'Dynamic
-      :ns $ %{} 'NsEntry (:doc |)
-        :code $ quote
-          ns triadica.util $ :require
+            triadica.core :refer $ digraph
             triadica.$meta :refer $ calcit-dirname calcit-filename
