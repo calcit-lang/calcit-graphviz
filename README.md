@@ -10,6 +10,10 @@ use `triadica.core/digraph`, `graph`, `node`, `arrow`, and `connect` directly.
 
 Install with `caps add calcit-lang/graphviz@<tag>` and run `caps`.
 
+See [Generate DOT source](docs/generate-dot-source.md) for the `digraph`,
+`graph`, `node`, `arrow`, and `connect` composition model. The page is indexed
+by `calcit docs read/search`.
+
 ### License
 
 MIT
