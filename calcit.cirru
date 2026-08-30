@@ -10,9 +10,9 @@
       :modules $ []
       :type-slots $ {}
   :files $ {}
-    |triadica.core $ %{} 'FileEntry
+    'triadica.core $ %{} 'FileEntry
       :defs $ {}
-        |arrow $ %{} 'CodeEntry (:doc |)
+        'arrow $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn arrow (from to ? options)
               if (empty? options)
@@ -20,7 +20,7 @@
                 str "|  " $ str-spaced (wrap from) |-> (wrap to) |[ (render-options options) |]
           :examples $ []
           :schema $ :: 'Dynamic
-        |connect $ %{} 'CodeEntry (:doc |)
+        'connect $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn connect (from to options)
               if (empty? options)
@@ -28,19 +28,19 @@
                 str "|  " $ str-spaced (wrap from) |-- (wrap to) |[ (render-options options) |]
           :examples $ []
           :schema $ :: 'Dynamic
-        |digraph $ %{} 'CodeEntry (:doc |)
+        'digraph $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn digraph (options & children)
               str &newline "|digraph {" (render-option-lines options) &newline (join-str children &newline) &newline |} &newline
           :examples $ []
           :schema $ :: 'Dynamic
-        |graph $ %{} 'CodeEntry (:doc |)
+        'graph $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn graph (options & children)
               str &newline "|graph {" (render-option-lines options) &newline (join-str children &newline) &newline |} &newline
           :examples $ []
           :schema $ :: 'Dynamic
-        |node $ %{} 'CodeEntry (:doc |)
+        'node $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn node (name ? options)
               if (empty? options)
@@ -48,7 +48,7 @@
                 str "|  " (wrap name) "| [ " (render-options options) "| ]"
           :examples $ []
           :schema $ :: 'Dynamic
-        |render-option-lines $ %{} 'CodeEntry (:doc |)
+        'render-option-lines $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn render-option-lines (options)
               if (empty? options) | $ -> options (.to-list)
@@ -59,7 +59,7 @@
                 .join-str &newline
           :examples $ []
           :schema $ :: 'Dynamic
-        |render-options $ %{} 'CodeEntry (:doc |)
+        'render-options $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn render-options (o)
               -> o (.to-list)
@@ -71,12 +71,12 @@
                 .join-str "| "
           :examples $ []
           :schema $ :: 'Dynamic
-        |str-spaced $ %{} 'CodeEntry (:doc |)
+        'str-spaced $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn str-spaced (& children) (join-str children "| ")
           :examples $ []
           :schema $ :: 'Dynamic
-        |wrap $ %{} 'CodeEntry (:doc |)
+        'wrap $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn wrap (x)
               if (includes? x "| ") (str "|\"" x "|\"") x
@@ -84,30 +84,30 @@
           :schema $ :: 'Dynamic
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote (ns triadica.core)
-    |triadica.main $ %{} 'FileEntry
+    'triadica.main $ %{} 'FileEntry
       :defs $ {}
-        |*counter $ %{} 'CodeEntry (:doc |)
+        '*counter $ %{} 'CodeEntry (:doc |)
           :code $ quote (defatom *counter 0)
           :examples $ []
           :schema $ :: 'Dynamic
-        |concat-them $ %{} 'CodeEntry (:doc |)
+        'concat-them $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn concat-them (children) (concat & children)
           :examples $ []
           :schema $ :: 'Dynamic
-        |gen-counter-id! $ %{} 'CodeEntry (:doc |)
+        'gen-counter-id! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn gen-counter-id! ()
               reset! *counter $ inc @*counter
               str |p @*counter
           :examples $ []
           :schema $ :: 'Dynamic
-        |main! $ %{} 'CodeEntry (:doc |)
+        'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn main! () $ render-demo!
           :examples $ []
           :schema $ :: 'Dynamic
-        |make-data-tree $ %{} 'CodeEntry (:doc |)
+        'make-data-tree $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn make-data-tree (tree parent-id)
               if (list? tree)
@@ -123,7 +123,7 @@
                   {} (:style :filled) (:fillcolor :darkgoldenrod1)
           :examples $ []
           :schema $ :: 'Dynamic
-        |make-tree-demo $ %{} 'CodeEntry (:doc |)
+        'make-tree-demo $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn make-tree-demo (vec-tree) (reset! *counter 0) (; println |data vec-tree)
               wo-log $ digraph ({})
@@ -131,12 +131,12 @@
                 make-data-tree vec-tree $ gen-counter-id!
           :examples $ []
           :schema $ :: 'Dynamic
-        |reload! $ %{} 'CodeEntry (:doc |)
+        'reload! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn reload! () $ render-demo!
           :examples $ []
           :schema $ :: 'Dynamic
-        |render-demo! $ %{} 'CodeEntry (:doc |)
+        'render-demo! $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn render-demo! ()
               ; write-file |output/demo.dot $ w-log
@@ -163,7 +163,7 @@
               ; write-file |output/demo.dot $ make-tree-demo tree-data
           :examples $ []
           :schema $ :: 'Dynamic
-        |tree-data $ %{} 'CodeEntry (:doc |)
+        'tree-data $ %{} 'CodeEntry (:doc |)
           :code $ quote
             def tree-data $ quote
                 0 1 2
@@ -182,9 +182,9 @@
           ns triadica.main $ :require
             triadica.core :refer $ digraph node arrow connect
             calcit.std.process :refer $ execute!
-    |triadica.test $ %{} 'FileEntry
+    'triadica.test $ %{} 'FileEntry
       :defs $ {}
-        |run-tests $ %{} 'CodeEntry (:doc |)
+        'run-tests $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn run-tests () (println "|%%%% test for lib") (println calcit-filename calcit-dirname)
               println $ digraph
