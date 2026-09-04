@@ -4,6 +4,7 @@
     "render": "dot -Tsvg -Gfontcolor=red -Glabel='My demo' input/demo.dot -o output/demo.svg"
   },
   "dependencies": {
+    "@calcit/procs": "0.13.77",
     "vite": "^3.0.3"
   }
 }

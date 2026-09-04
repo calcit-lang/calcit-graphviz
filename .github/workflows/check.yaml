@@ -21,6 +21,11 @@ jobs:
       - name: Validate Calcit snapshot
         run: |
           caps --strict --ci
+          mkdir -p .calcit/bin
+          corepack enable --install-directory .calcit/bin
+          export PATH="$PWD/.calcit/bin:$PATH"
+          yarn install --immutable
+          caps verify --toolchain
           calcit calcit.cirru edit format
           git diff --exit-code -- calcit.cirru
           calcit calcit.cirru --check-only
