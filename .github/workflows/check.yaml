@@ -17,7 +17,8 @@ jobs:
 
       - name: Validate Calcit snapshot
         run: |
-          caps --ci
+          caps --strict --ci
+          caps verify --toolchain
           calcit calcit.cirru edit format
           git diff --exit-code -- calcit.cirru
           calcit calcit.cirru --check-only
