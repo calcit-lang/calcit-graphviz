@@ -147,15 +147,15 @@
                   arrow |A |C $ {}
                   arrow |A |E $ {}
               apply-args
-                  []
+                  range 0
                   , 0
                 fn (acc n)
                   if (< n 10)
                     do
                       ; println $ parse-cirru-list (&format-ternary-tree acc)
                       write-file |output/demo.dot $ make-tree-demo
-                        wo-log $ first
-                          parse-cirru-list $ &format-ternary-tree acc
+                        wo-log $ option:unwrap
+                          first $ parse-cirru-list (&format-ternary-tree acc)
                       println n |result: $ execute!
                         [] |dot |-T |svg |-K |dot |output/demo.dot |-o $ str |output/demo n |.svg
                       recur (conj acc n) (inc n)
@@ -163,6 +163,13 @@
               ; write-file |output/demo.dot $ make-tree-demo tree-data
           :examples $ []
           :schema $ :: 'Dynamic
+          :tests $ []
+            %{} 'TestEntry (:name |formats-list-accumulator)
+              :code $ quote
+                assert= true $ list?
+                  option:unwrap $ first
+                    parse-cirru-list $ &format-ternary-tree
+                      conj (range 0) 0
         'tree-data $ %{} 'CodeEntry (:doc |)
           :code $ quote
             def tree-data $ quote
