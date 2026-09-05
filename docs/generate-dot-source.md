@@ -25,8 +25,7 @@ entry_for:
 Triadica is a pure Calcit source generator: it produces deterministic DOT text but does not invoke a Graphviz executable, create files, or render images. Keep rendering and file-system effects in an application adapter.
 
 ```cirru.no-check
-triadica.core/digraph
-  {}
+triadica.core/digraph ({})
   []
     triadica.core/node |client $ {} (:label |Client)
     triadica.core/node |server $ {} (:label |Server)
