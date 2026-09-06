@@ -14,6 +14,7 @@
 /dylibs/
 
 node_modules
+.yarn/*.gz
 
 demo/output
 

@@ -51,24 +51,30 @@
         'render-option-lines $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn render-option-lines (options)
-              if (empty? options) | $ -> options (.to-list)
-                map $ fn (pair)
-                  str
-                    -> (first pair) (.unwrap)
-                    , "| = " $ -> (last pair) (.unwrap)
-                .join-str &newline
+              if (empty? options) | $ join-str
+                ->
+                  assert-type options $ :: 'Map 'Tag 'Dynamic
+                  .to-list
+                  map $ fn (pair)
+                    str
+                      -> (first pair) (.unwrap)
+                      , "| = " $ -> (last pair) (.unwrap)
+                , &newline
           :examples $ []
           :schema $ :: 'Dynamic
         'render-options $ %{} 'CodeEntry (:doc |)
           :code $ quote
             defn render-options (o)
-              -> o (.to-list)
-                map $ fn (entry)
-                  str
-                    turn-string $ -> (first entry) (.unwrap)
-                    , |= $ wrap
-                      turn-string $ -> (last entry) (.unwrap)
-                .join-str "| "
+              join-str
+                ->
+                  assert-type o $ :: 'Map 'Tag 'Dynamic
+                  .to-list
+                  map $ fn (entry)
+                    str
+                      turn-string $ -> (first entry) (.unwrap)
+                      , |= $ wrap
+                        turn-string $ -> (last entry) (.unwrap)
+                , "| "
           :examples $ []
           :schema $ :: 'Dynamic
         'str-spaced $ %{} 'CodeEntry (:doc |)
@@ -118,7 +124,7 @@
                       wo-log $ str (make-data-tree child child-id) &newline
                         node parent-id $ {} (:shape :diamond) (:style :filled) (:fillcolor :cyan) (:fontcolor :darkturquoise)
                         arrow parent-id child-id $ {}
-                  .join-str &newline
+                  join-str &newline
                 node (turn-string tree)
                   {} (:style :filled) (:fillcolor :darkgoldenrod1)
           :examples $ []
