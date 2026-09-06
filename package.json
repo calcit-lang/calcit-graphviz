@@ -1,5 +1,8 @@
 {
   "packageManager": "yarn@4.12.0",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
   "scripts": {
     "render": "mkdir -p output && dot -Tsvg -Gfontcolor=red -Glabel='My demo' input/demo.dot -o output/demo.svg"
   },
