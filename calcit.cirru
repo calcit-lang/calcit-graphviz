@@ -1,11 +1,19 @@
 
-{} (:about "|Machine-generated snapshot. Do not edit directly — changes will be overwritten. Use `calcit query` to inspect and `calcit edit`/`calcit tree` to modify. Run `calcit docs agents --full` first. Manual edits must follow format and schema conventions, then run `calcit edit format`.") (:package |triadica)
+{}
+  :about "|Machine-generated snapshot. Do not edit directly — changes will be overwritten. Use `calcit query` to inspect and `calcit edit`/`calcit tree` to modify. Run `calcit docs agents --contract` before mutations; use `--full` for first orientation or changed contract digest. Manual edits must follow format and schema conventions, then run `calcit edit format`."
+  :package |triadica
   :entries $ {}
-    :default $ {} (:description |) (:init-fn 'triadica.main/main!) (:mode :native) (:reload-fn 'triadica.main/reload!)
+    :default $ {} (:description |)
+      :init-fn 'triadica.main/main!
+      :mode :native
+      :reload-fn 'triadica.main/reload!
       :feature-policy $ {}
       :modules $ [] |calcit.std/
       :type-slots $ {}
-    :run-tests $ {} (:description |) (:init-fn 'triadica.test/run-tests) (:mode :native) (:reload-fn 'triadica.test/run-tests)
+    :run-tests $ {} (:description |)
+      :init-fn 'triadica.test/run-tests
+      :mode :native
+      :reload-fn 'triadica.test/run-tests
       :feature-policy $ {}
       :modules $ []
       :type-slots $ {}
@@ -13,233 +21,199 @@
     'triadica.core $ %{} 'FileEntry
       :defs $ {}
         'arrow $ %{} 'CodeEntry (:doc |)
-          :code $ quote
-            defn arrow (from to options)
-              if (empty? options)
-                str "|  " $ str (wrap from) "| -> " (wrap to)
-                str "|  " $ str-spaced (wrap from) |-> (wrap to) |[ (render-options options) |]
+          :code $ quote $ defn arrow (from to options)
+            if (empty? options)
+              str "|  " $ str (wrap from) "| -> " $ wrap to
+              str "|  " $ str-spaced (wrap from) |-> (wrap to) |[ (render-options options) |]
           :examples $ []
-          :schema $ :: 'Fn
-            {} (:return 'Dynamic)
-              :args $ [] 'Dynamic 'Dynamic 'Dynamic
+          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+            :args $ [] 'Dynamic 'Dynamic 'Dynamic
         'connect $ %{} 'CodeEntry (:doc |)
-          :code $ quote
-            defn connect (from to options)
-              if (empty? options)
-                str "|  " $ str (wrap from) "| -- " (wrap to)
-                str "|  " $ str-spaced (wrap from) |-- (wrap to) |[ (render-options options) |]
+          :code $ quote $ defn connect (from to options)
+            if (empty? options)
+              str "|  " $ str (wrap from) "| -- " $ wrap to
+              str "|  " $ str-spaced (wrap from) |-- (wrap to) |[ (render-options options) |]
           :examples $ []
-          :schema $ :: 'Fn
-            {} (:return 'Dynamic)
-              :args $ [] 'Dynamic 'Dynamic 'Dynamic
+          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+            :args $ [] 'Dynamic 'Dynamic 'Dynamic
         'digraph $ %{} 'CodeEntry (:doc |)
-          :code $ quote
-            defn digraph (options & children)
-              str &newline "|digraph {" (render-option-lines options) &newline (join-str children &newline) &newline |} &newline
+          :code $ quote $ defn digraph (options & children)
+            str &newline "|digraph {"
+              render-option-lines options
+              , &newline (join-str children &newline) &newline |} &newline
           :examples $ []
-          :schema $ :: 'Fn
-            {} (:rest 'Dynamic) (:return 'Dynamic)
-              :args $ [] 'Dynamic
+          :schema $ :: 'Fn $ {} (:rest 'Dynamic) (:return 'Dynamic)
+            :args $ [] 'Dynamic
         'graph $ %{} 'CodeEntry (:doc |)
-          :code $ quote
-            defn graph (options & children)
-              str &newline "|graph {" (render-option-lines options) &newline (join-str children &newline) &newline |} &newline
+          :code $ quote $ defn graph (options & children)
+            str &newline "|graph {"
+              render-option-lines options
+              , &newline (join-str children &newline) &newline |} &newline
           :examples $ []
-          :schema $ :: 'Fn
-            {} (:rest 'Dynamic) (:return 'Dynamic)
-              :args $ [] 'Dynamic
+          :schema $ :: 'Fn $ {} (:rest 'Dynamic) (:return 'Dynamic)
+            :args $ [] 'Dynamic
         'node $ %{} 'CodeEntry (:doc |)
-          :code $ quote
-            defn node (name options)
-              if (empty? options)
-                str "|  " $ wrap name
-                str "|  " (wrap name) "| [ " (render-options options) "| ]"
+          :code $ quote $ defn node (name options)
+            if (empty? options)
+              str "|  " $ wrap name
+              str "|  " (wrap name) "| [ " (render-options options) "| ]"
           :examples $ []
-          :schema $ :: 'Fn
-            {} (:return 'Dynamic)
-              :args $ [] 'Dynamic 'Dynamic
+          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+            :args $ [] 'Dynamic 'Dynamic
         'render-option-lines $ %{} 'CodeEntry (:doc |)
-          :code $ quote
-            defn render-option-lines (options)
-              if (empty? options) | $ join-str
-                ->
-                  assert-type options $ :: 'Map 'Tag 'Dynamic
-                  &map:to-list
-                  map $ fn (pair)
-                    str (&list:first pair) "| = " $ &list:last pair
-                , &newline
+          :code $ quote $ defn render-option-lines (options)
+            if (empty? options) | $ join-str
+              ->
+                assert-type options $ :: 'Map 'Tag 'Dynamic
+                &map:to-list
+                map $ fn (pair)
+                  str (&list:first pair) "| = " $ &list:last pair
+              , &newline
           :examples $ []
-          :schema $ :: 'Fn
-            {} (:return 'Dynamic)
-              :args $ [] 'Dynamic
+          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+            :args $ [] 'Dynamic
         'render-options $ %{} 'CodeEntry (:doc |)
-          :code $ quote
-            defn render-options (o)
-              join-str
-                ->
-                  assert-type o $ :: 'Map 'Tag 'Dynamic
-                  &map:to-list
-                  map $ fn (entry)
-                    str
-                      turn-string $ &list:first entry
-                      , |= $ wrap
-                        turn-string $ &list:last entry
-                , "| "
+          :code $ quote $ defn render-options (o)
+            join-str
+              ->
+                assert-type o $ :: 'Map 'Tag 'Dynamic
+                &map:to-list
+                map $ fn (entry)
+                  str
+                    turn-string $ &list:first entry
+                    , |= $ wrap $ turn-string (&list:last entry)
+              , "| "
           :examples $ []
-          :schema $ :: 'Fn
-            {} (:return 'Dynamic)
-              :args $ [] 'Dynamic
+          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+            :args $ [] 'Dynamic
         'str-spaced $ %{} 'CodeEntry (:doc |)
-          :code $ quote
-            defn str-spaced (& children) (join-str children "| ")
+          :code $ quote $ defn str-spaced (& children) (join-str children "| ")
           :examples $ []
-          :schema $ :: 'Fn
-            {} (:rest 'Dynamic) (:return 'Dynamic)
-              :args $ []
+          :schema $ :: 'Fn $ {} (:rest 'Dynamic) (:return 'Dynamic)
+            :args $ []
         'wrap $ %{} 'CodeEntry (:doc |)
-          :code $ quote
-            defn wrap (x)
-              if (includes? x "| ") (str "|\"" x "|\"") x
+          :code $ quote $ defn wrap (x)
+            if (includes? x "| ") (str "|\"" x "|\"") x
           :examples $ []
-          :schema $ :: 'Fn
-            {} (:return 'Dynamic)
-              :args $ [] 'Dynamic
+          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+            :args $ [] 'Dynamic
       :ns $ %{} 'NsEntry (:doc |)
-        :code $ quote (ns triadica.core)
+        :code $ quote $ ns triadica.core
     'triadica.main $ %{} 'FileEntry
       :defs $ {}
         '*counter $ %{} 'CodeEntry (:doc |)
-          :code $ quote (defatom *counter 0)
+          :code $ quote $ defatom *counter 0
           :examples $ []
           :schema $ :: 'Dynamic
         'concat-them $ %{} 'CodeEntry (:doc |)
-          :code $ quote
-            defn concat-them (children) (concat & children)
+          :code $ quote $ defn concat-them (children) (concat & children)
           :examples $ []
-          :schema $ :: 'Fn
-            {} (:return 'Dynamic)
-              :args $ [] 'Dynamic
+          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+            :args $ [] 'Dynamic
         'gen-counter-id! $ %{} 'CodeEntry (:doc |)
-          :code $ quote
-            defn gen-counter-id! ()
-              reset! *counter $ inc @*counter
-              str |p @*counter
+          :code $ quote $ defn gen-counter-id! ()
+            reset! *counter $ inc @*counter
+            str |p @*counter
           :examples $ []
-          :schema $ :: 'Fn
-            {} (:return 'Dynamic)
-              :args $ []
+          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+            :args $ []
         'main! $ %{} 'CodeEntry (:doc |)
-          :code $ quote
-            defn main! () $ render-demo!
+          :code $ quote $ defn main! () (render-demo!)
           :examples $ []
-          :schema $ :: 'Fn
-            {} (:return 'Dynamic)
-              :args $ []
+          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+            :args $ []
         'make-data-tree $ %{} 'CodeEntry (:doc |)
-          :code $ quote
-            defn make-data-tree (tree parent-id)
-              if (list? tree)
-                -> tree
-                  map $ fn (child)
-                    let
-                        child-id $ if (string? child) (turn-string child) (gen-counter-id!)
-                      wo-log $ str (make-data-tree child child-id) &newline
-                        node parent-id $ {} (:shape :diamond) (:style :filled) (:fillcolor :cyan) (:fontcolor :darkturquoise)
-                        arrow parent-id child-id $ {}
-                  join-str &newline
-                node (turn-string tree)
-                  {} (:style :filled) (:fillcolor :darkgoldenrod1)
-          :examples $ []
-          :schema $ :: 'Fn
-            {} (:return 'Dynamic)
-              :args $ [] 'Dynamic 'Dynamic
-        'make-tree-demo $ %{} 'CodeEntry (:doc |)
-          :code $ quote
-            defn make-tree-demo (vec-tree) (reset! *counter 0) (; println |data vec-tree)
-              wo-log $ digraph ({})
-                node |graph $ {} (:ranksep 0.3) (:nodesep 0.25) (:splines :line)
-                make-data-tree vec-tree $ gen-counter-id!
-          :examples $ []
-          :schema $ :: 'Fn
-            {} (:return 'Dynamic)
-              :args $ [] 'Dynamic
-        'reload! $ %{} 'CodeEntry (:doc |)
-          :code $ quote
-            defn reload! () $ render-demo!
-          :examples $ []
-          :schema $ :: 'Fn
-            {} (:return 'Dynamic)
-              :args $ []
-        'render-demo! $ %{} 'CodeEntry (:doc |)
-          :code $ quote
-            defn render-demo! ()
-              ; write-file |output/demo.dot $ w-log
-                digraph nil (node |A)
-                  node |B $ {} (:color :red) (:shape :diamond)
-                  node |C $ {} (:style :filled) (:fillcolor :red) (:fontcolor :white) (:color :none)
-                  arrow |A |B $ {} (:arrowhead :inv)
-                  arrow |A |C $ {}
-                  arrow |A |E $ {}
-              apply-args
-                  range 0
-                  , 0
-                fn (acc n)
+          :code $ quote $ defn make-data-tree (tree parent-id)
+            if (list? tree)
+              -> tree
+                map $ fn (child)
                   let
-                      acc $ assert-type acc (:: 'List 'Number)
-                      n $ assert-type n 'Number
-                    if (< n 10)
-                      do
-                        ; println $ parse-cirru-list (&format-ternary-tree acc)
-                        write-file |output/demo.dot $ make-tree-demo
-                          wo-log $ &list:first
-                            parse-cirru-list $ &format-ternary-tree acc
-                        println n |result: $ execute!
-                          [] |dot |-T |svg |-K |dot |output/demo.dot |-o $ str |output/demo n |.svg
-                        recur (conj acc n) (inc n)
-                      , nil
-              ; write-file |output/demo.dot $ make-tree-demo tree-data
+                      child-id $ if (string? child) (turn-string child) (gen-counter-id!)
+                    wo-log $ str (make-data-tree child child-id) &newline
+                      node parent-id $ {} (:shape :diamond) (:style :filled) (:fillcolor :cyan) (:fontcolor :darkturquoise)
+                      arrow parent-id child-id $ {}
+                join-str &newline
+              node (turn-string tree)
+                {} (:style :filled) (:fillcolor :darkgoldenrod1)
           :examples $ []
-          :schema $ :: 'Fn
-            {} (:return 'Dynamic)
-              :args $ []
-          :tests $ []
-            %{} 'TestEntry (:name |formats-list-accumulator)
-              :code $ quote
-                assert= true $ list?
-                  &list:first $ parse-cirru-list
-                    &format-ternary-tree $ conj (range 0) 0
+          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+            :args $ [] 'Dynamic 'Dynamic
+        'make-tree-demo $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn make-tree-demo (vec-tree) (reset! *counter 0) (; println |data vec-tree)
+            wo-log $ digraph ({})
+              node |graph $ {} (:ranksep 0.3) (:nodesep 0.25) (:splines :line)
+              make-data-tree vec-tree $ gen-counter-id!
+          :examples $ []
+          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+            :args $ [] 'Dynamic
+        'reload! $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn reload! () (render-demo!)
+          :examples $ []
+          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+            :args $ []
+        'render-demo! $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn render-demo! ()
+            ; write-file |output/demo.dot $ w-log $ digraph nil (node |A)
+              node |B $ {} (:color :red) (:shape :diamond)
+              node |C $ {} (:style :filled) (:fillcolor :red) (:fontcolor :white) (:color :none)
+              arrow |A |B $ {} $ :arrowhead :inv
+              arrow |A |C $ {}
+              arrow |A |E $ {}
+            apply-args
+                range 0
+                , 0
+              fn (acc n)
+                let
+                    acc $ assert-type acc $ :: 'List 'Number
+                    n $ assert-type n 'Number
+                  if (< n 10)
+                    do
+                      ; println $ parse-cirru-list $ &format-ternary-tree acc
+                      write-file |output/demo.dot $ make-tree-demo $ wo-log
+                        &list:first $ parse-cirru-list $ &format-ternary-tree acc
+                      println n |result: $ execute! $ [] |dot |-T |svg |-K |dot |output/demo.dot |-o (str |output/demo n |.svg)
+                      recur (conj acc n) (inc n)
+                    , nil
+            ; write-file |output/demo.dot $ make-tree-demo tree-data
+          :examples $ []
+          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+            :args $ []
+          :tests $ [] $ %{} 'TestEntry
+            :name |formats-list-accumulator
+            :code $ quote $ assert= true
+              list? $ &list:first $ parse-cirru-list
+                &format-ternary-tree $ conj (range 0) 0
         'tree-data $ %{} 'CodeEntry (:doc |)
-          :code $ quote
-            def tree-data $ quote
-                0 1 2
-                ((3 4 5) (6 7 8) (9 10 11))
-                  (((12 13 14) (15 16 17) (18 19 20)) ((21 22 23) (24 25 26) (27 28 29)) ((30 31 32) (33 34 35) (36 37 38)))
-                    ((39 40 41) (42 43 44) (45 46 47))
-                      (48 49 50) (51 52 53) (54 55 56)
-                      (57 58 59) (60 61 62) (63 64 65)
-                    (66 67 68) (69 70 71) (72 73 74)
-                  75 76 77
-                78 79
+          :code $ quote $ def tree-data
+            quote $
+              0 1 2
+              ((3 4 5) (6 7 8) (9 10 11))
+                (((12 13 14) (15 16 17) (18 19 20)) ((21 22 23) (24 25 26) (27 28 29)) ((30 31 32) (33 34 35) (36 37 38)))
+                  ((39 40 41) (42 43 44) (45 46 47))
+                    (48 49 50) (51 52 53) (54 55 56)
+                    (57 58 59) (60 61 62) (63 64 65)
+                  (66 67 68) (69 70 71) (72 73 74)
+                75 76 77
+              78 79
           :examples $ []
           :schema $ :: 'Dynamic
       :ns $ %{} 'NsEntry (:doc |)
-        :code $ quote
-          ns triadica.main $ :require
+        :code $ quote $ ns triadica.main
+          :require
             triadica.core :refer $ digraph node arrow connect
             calcit.std.process :refer $ execute!
     'triadica.test $ %{} 'FileEntry
-      :defs $ {}
-        'run-tests $ %{} 'CodeEntry (:doc |)
-          :code $ quote
-            defn run-tests () (println "|%%%% test for lib") (println calcit-filename calcit-dirname)
-              println $ digraph
-                {} $ :type :graph
+      :defs $ {} $ 'run-tests
+        %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn run-tests ()
+            println "|%%%% test for lib"
+            println calcit-filename calcit-dirname
+            println $ digraph $ {} (:type :graph)
           :examples $ []
-          :schema $ :: 'Fn
-            {} (:return 'Dynamic)
-              :args $ []
+          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+            :args $ []
       :ns $ %{} 'NsEntry (:doc |)
-        :code $ quote
-          ns triadica.test $ :require
+        :code $ quote $ ns triadica.test
+          :require
             triadica.core :refer $ digraph
             triadica.$meta :refer $ calcit-dirname calcit-filename
