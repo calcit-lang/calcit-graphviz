@@ -3,17 +3,11 @@
   :about "|Machine-generated snapshot. Do not edit directly — changes will be overwritten. Use `calcit query` to inspect and `calcit edit`/`calcit tree` to modify. Run `calcit docs agents --contract` before mutations; use `--full` for first orientation or changed contract digest. Manual edits must follow format and schema conventions, then run `calcit edit format`."
   :package |triadica
   :entries $ {}
-    :default $ {} (:description |)
-      :init-fn 'triadica.main/main!
-      :mode :native
-      :reload-fn 'triadica.main/reload!
+    :default $ {} (:description |) (:init-fn 'triadica.main/main!) (:mode :native) (:reload-fn 'triadica.main/reload!)
       :feature-policy $ {}
       :modules $ [] |calcit.std/
       :type-slots $ {}
-    :run-tests $ {} (:description |)
-      :init-fn 'triadica.test/run-tests
-      :mode :native
-      :reload-fn 'triadica.test/run-tests
+    :run-tests $ {} (:description |) (:init-fn 'triadica.test/run-tests) (:mode :native) (:reload-fn 'triadica.test/run-tests)
       :feature-policy $ {}
       :modules $ []
       :type-slots $ {}
@@ -38,17 +32,13 @@
             :args $ [] 'Dynamic 'Dynamic 'Dynamic
         'digraph $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn digraph (options & children)
-            str &newline "|digraph {"
-              render-option-lines options
-              , &newline (join-str children &newline) &newline |} &newline
+            str &newline "|digraph {" (render-option-lines options) &newline (join-str children &newline) &newline |} &newline
           :examples $ []
           :schema $ :: 'Fn $ {} (:rest 'Dynamic) (:return 'Dynamic)
             :args $ [] 'Dynamic
         'graph $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn graph (options & children)
-            str &newline "|graph {"
-              render-option-lines options
-              , &newline (join-str children &newline) &newline |} &newline
+            str &newline "|graph {" (render-option-lines options) &newline (join-str children &newline) &newline |} &newline
           :examples $ []
           :schema $ :: 'Fn $ {} (:rest 'Dynamic) (:return 'Dynamic)
             :args $ [] 'Dynamic
@@ -178,8 +168,7 @@
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Dynamic)
             :args $ []
-          :tests $ [] $ %{} 'TestEntry
-            :name |formats-list-accumulator
+          :tests $ [] $ %{} 'TestEntry (:name |formats-list-accumulator)
             :code $ quote $ assert= true
               list? $ &list:first $ parse-cirru-list
                 &format-ternary-tree $ conj (range 0) 0
@@ -205,9 +194,7 @@
     'triadica.test $ %{} 'FileEntry
       :defs $ {} $ 'run-tests
         %{} 'CodeEntry (:doc |)
-          :code $ quote $ defn run-tests ()
-            println "|%%%% test for lib"
-            println calcit-filename calcit-dirname
+          :code $ quote $ defn run-tests () (println "|%%%% test for lib") (println calcit-filename calcit-dirname)
             println $ digraph $ {} (:type :graph)
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Dynamic)
