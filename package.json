@@ -7,7 +7,7 @@
     "render": "mkdir -p output && dot -Tsvg -Gfontcolor=red -Glabel='My demo' input/demo.dot -o output/demo.svg"
   },
   "dependencies": {
-    "@calcit/procs": "0.18.1",
+    "@calcit/procs": "0.22.0-alpha.3",
     "vite": "^8.2.2"
   }
 }
