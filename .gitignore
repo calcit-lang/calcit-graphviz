@@ -25,3 +25,4 @@ js-out/
 /dist/
 .pnp.cjs
 .pnp.loader.mjs
+.calcit/

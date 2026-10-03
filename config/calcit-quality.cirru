@@ -1,5 +1,14 @@
 {} (:schemaVersion 2)
   :definitions $ {}
+    |triadica.core/dot-scalar-text $ {} (:codeDynamic 0)
+      :codeNil 0
+      :declaredOptional 0
+      :deprecatedCalls 0
+      :schemaDynamic 1
+      :typeNone 0
+      :typeNotFull 1
+      :unresolved 1
+      :unsafeCoerce 0
     |triadica.core/arrow $ {} (:codeDynamic 0)
       :codeNil 0
       :declaredOptional 0
@@ -58,10 +67,10 @@
       :codeNil 0
       :declaredOptional 0
       :deprecatedCalls 0
-      :schemaDynamic 2
+      :schemaDynamic 1
       :typeNone 0
       :typeNotFull 1
-      :unresolved 2
+      :unresolved 1
       :unsafeCoerce 0
     |triadica.core/str-spaced $ {} (:codeDynamic 0)
       :codeNil 0
@@ -76,10 +85,10 @@
       :codeNil 0
       :declaredOptional 0
       :deprecatedCalls 0
-      :schemaDynamic 2
+      :schemaDynamic 0
       :typeNone 0
-      :typeNotFull 1
-      :unresolved 2
+      :typeNotFull 0
+      :unresolved 0
       :unsafeCoerce 0
     |triadica.main/*counter $ {} (:codeDynamic 0)
       :codeNil 0
@@ -175,10 +184,10 @@
     :codeNil 2
     :declaredOptional 0
     :deprecatedCalls 0
-    :schemaDynamic 39
+    :schemaDynamic 37
     :typeNone 1
     :typeNotFull 19
-    :unresolved 41
+    :unresolved 39
     :unsafeCoerce 0
   :scope $ {} (:includeDependencies false)
     :namespace nil

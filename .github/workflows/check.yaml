@@ -9,16 +9,22 @@ name: Test
 permissions:
   contents: read
 
+concurrency:
+  group: frontend-${{ github.repository }}-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || github.ref }}
+  cancel-in-progress: false
+  queue: max
+
 jobs:
   build_and_test:
     name: Test
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
 
-      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+      - uses: actions/setup-node@v6.5.0
         with:
           node-version: 24
           package-manager-cache: false
@@ -29,7 +35,7 @@ jobs:
           corepack prepare yarn@4.18.0 --activate
           yarn --version
 
-      - uses: calcit-lang/setup-calcit@ca701be5a471759e442aa053cd100720bbe1f09f # v1.5.0
+      - uses: calcit-lang/setup-calcit@v1.5.0
         with:
           tools: calcit,caps
           caps-version: "0.1.1"
@@ -41,11 +47,14 @@ jobs:
           caps verify --toolchain
           calcit calcit.cirru edit format
           git diff --exit-code -- calcit.cirru
-          calcit calcit.cirru fix --workflow strict --verify --format edn
           calcit calcit.cirru --check-only
           calcit calcit.cirru --entry run-tests --check-only
+          calcit calcit.cirru analyze check-public \
+            --ns 'triadica.$meta' --ns triadica.core --ns triadica.main --ns triadica.test --format json
+          calcit calcit.cirru test --require-match --summary-only --format json
+          calcit calcit.cirru docs format-md docs/generate-dot-source.md --check
+          calcit calcit.cirru docs check-md docs/generate-dot-source.md --failures-only
           calcit calcit.cirru --entry run-tests
-          calcit calcit.cirru analyze deprecated --summary-only --format json
           calcit calcit.cirru analyze dynamic-methods --summary-only --format json | jq -e '.data.summary.findings == 0'
           calcit calcit.cirru --entry run-tests analyze dynamic-methods --summary-only --format json | jq -e '.data.summary.findings == 0'
           calcit calcit.cirru analyze quality --baseline config/calcit-quality.cirru
@@ -54,9 +63,11 @@ jobs:
         id: asset-path
         env:
           CDN_ORIGIN: https://cos-sh.tiye.me
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
+          set -euo pipefail
           if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
-            asset_prefix="${GITHUB_REPOSITORY}/pr/"
+            asset_prefix="${GITHUB_REPOSITORY}/pr/${PR_NUMBER}/${GITHUB_RUN_ID}/${GITHUB_RUN_ATTEMPT}/"
           else
             asset_prefix="${GITHUB_REPOSITORY}/"
           fi
@@ -68,11 +79,28 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes graphviz
           yarn render
+          calcit calcit.cirru
           yarn vite build --base="$VITE_BASE_URL"
 
+      - name: Check current production revision
+        id: production
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          current_sha="$(gh api "repos/${GITHUB_REPOSITORY}/commits/main" --jq '.sha')"
+          if [[ "$GITHUB_SHA" == "$current_sha" ]]; then
+            echo "current=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "current=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Skip stale production revision ${GITHUB_SHA}; current main is ${current_sha}."
+          fi
+
       - name: Upload static assets to COS
-        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
-        uses: worktools/cos-upload-action@17e6d213fe9f6772a6090a13c8ba044cd6cbcb09 # v1.1.1
+        timeout-minutes: 10
+        if: steps.production.outputs.current == 'true' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
+        uses: worktools/cos-upload-action@v1.2.0
         with:
           source-dir: dist
           bucket: ${{ secrets.COS_BUCKET }}
