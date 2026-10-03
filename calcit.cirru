@@ -3,11 +3,11 @@
   :about "|Machine-generated snapshot. Do not edit directly — changes will be overwritten. Use `calcit query` to inspect and `calcit edit`/`calcit tree` to modify. Run `calcit docs agents --contract` before mutations; use `--full` for first orientation or changed contract digest. Manual edits must follow format and schema conventions, then run `calcit edit format`."
   :package |triadica
   :entries $ {}
-    :default $ {} (:description |) (:init-fn 'triadica.main/main!) (:mode :native) (:reload-fn 'triadica.main/reload!)
+    :default $ {} (:description |) (:init-fn 'triadica.main/main!) (:mode :native) (:reload-fn 'triadica.main/reload!) (:target :native)
       :feature-policy $ {}
       :modules $ [] |calcit.std/
       :type-slots $ {}
-    :run-tests $ {} (:description |) (:init-fn 'triadica.test/run-tests) (:mode :native) (:reload-fn 'triadica.test/run-tests)
+    :run-tests $ {} (:description |) (:init-fn 'triadica.test/run-tests) (:mode :native) (:reload-fn 'triadica.test/run-tests) (:target :native)
       :feature-policy $ {}
       :modules $ []
       :type-slots $ {}
@@ -35,6 +35,20 @@
             str &newline "|digraph {" (render-option-lines options) &newline (join-str children &newline) &newline |} &newline
           :examples $ []
           :schema $ :: 'Fn $ {} (:rest 'Dynamic) (:return 'Dynamic)
+            :args $ [] 'Dynamic
+        'dot-scalar-text $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn dot-scalar-text (value)
+            cond
+                string? value
+                to-string value
+              (tag? value) (to-string value)
+              (number? value) (to-string value)
+              (bool? value) (to-string value)
+              (symbol? value) (to-string value)
+              (nil? value) (to-string value)
+              true $ raise "|DOT values must be scalar text, tags, numbers, booleans, symbols or nil"
+          :examples $ []
+          :schema $ :: 'Fn $ {} (:return 'String)
             :args $ [] 'Dynamic
         'graph $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn graph (options & children)
@@ -65,17 +79,20 @@
         'render-options $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-options (o)
             join-str
-              ->
-                assert-type o $ :: 'Map 'Tag 'Dynamic
-                &map:to-list
-                map $ fn (entry)
+              map
+                map-entries $ decode-map-as o $ :: 'Map 'Tag 'Dynamic
+                fn (entry)
                   str
-                    turn-string $ &list:first entry
-                    , |= $ wrap $ turn-string (&list:last entry)
+                    to-string $ :key entry
+                    , |= $ wrap $ dot-scalar-text (:value entry)
               , "| "
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+          :schema $ :: 'Fn $ {} (:return 'String)
             :args $ [] 'Dynamic
+          :tests $ [] $ %{} 'TestEntry (:name |formats-typed-attributes)
+            :code $ quote $ do
+              assert= |color=red $ render-options $ {} (:color :red)
+              assert= "|label=\"two words\"" $ render-options $ {} (:label "|two words")
         'str-spaced $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn str-spaced (& children) (join-str children "| ")
           :examples $ []
@@ -85,8 +102,8 @@
           :code $ quote $ defn wrap (x)
             if (includes? x "| ") (str "|\"" x "|\"") x
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Dynamic)
-            :args $ [] 'Dynamic
+          :schema $ :: 'Fn $ {} (:return 'String)
+            :args $ [] 'String
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns triadica.core
     'triadica.main $ %{} 'FileEntry
@@ -118,12 +135,12 @@
               -> tree
                 map $ fn (child)
                   let
-                      child-id $ if (string? child) (turn-string child) (gen-counter-id!)
+                      child-id $ if (string? child) (to-string child) (gen-counter-id!)
                     wo-log $ str (make-data-tree child child-id) &newline
                       node parent-id $ {} (:shape :diamond) (:style :filled) (:fillcolor :cyan) (:fontcolor :darkturquoise)
                       arrow parent-id child-id $ {}
                 join-str &newline
-              node (turn-string tree)
+              node (triadica.core/dot-scalar-text tree)
                 {} (:style :filled) (:fillcolor :darkgoldenrod1)
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'Dynamic)

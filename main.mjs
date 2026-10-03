@@ -1,5 +1,10 @@
 
 import demo from "./output/demo.svg";
+const frames = import.meta.glob("./output/demo[0-9].svg", {
+  eager: true,
+  query: "?url",
+  import: "default",
+});
 
 console.log("loaded", demo);
 document.querySelector("#demo").src = demo;
@@ -7,7 +12,8 @@ document.querySelector("#demo").src = demo;
 let counter = 0;
 
 setInterval(()=> {
-   document.querySelector("#demo").src = `/output/demo${counter}.svg`;
+   const frame = frames[`./output/demo${counter}.svg`];
+   if (frame) document.querySelector("#demo").src = frame;
    counter += 1;
 }, 2000)
 
