@@ -16,7 +16,7 @@ by `calcit docs read/search`.
 
 ### 正式 Calcit 0.28 与前端迁移
 
-使用正式 Calcit/procs 0.28.0、Caps 0.1.1、Node24/Yarn4.18；标准库0.2.35与
+使用正式 Calcit/procs 0.28.0、Caps 0.1.1、Node24/Yarn4.18；标准库升级到正式0.2.37，
 模块版本0.0.10保持，未发版。Snapshot 只由官方事务/raw revision守卫修改。
 native/default 与 run-tests target明确，前端沿用原JS编译和Graphviz渲染流程。
 
