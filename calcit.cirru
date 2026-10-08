@@ -32,7 +32,7 @@
             :args $ [] 'Dynamic 'Dynamic 'Dynamic
         'digraph $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn digraph (options & children)
-            str &newline "|digraph {" (render-option-lines options) &newline (join-str children &newline) &newline |} &newline
+            str &newline "|digraph {" (render-option-lines options) &newline (join-string children &newline) &newline |} &newline
           :examples $ []
           :schema $ :: 'Fn $ {} (:rest 'Dynamic) (:return 'Dynamic)
             :args $ [] 'Dynamic
@@ -52,7 +52,7 @@
             :args $ [] 'Dynamic
         'graph $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn graph (options & children)
-            str &newline "|graph {" (render-option-lines options) &newline (join-str children &newline) &newline |} &newline
+            str &newline "|graph {" (render-option-lines options) &newline (join-string children &newline) &newline |} &newline
           :examples $ []
           :schema $ :: 'Fn $ {} (:rest 'Dynamic) (:return 'Dynamic)
             :args $ [] 'Dynamic
@@ -66,7 +66,7 @@
             :args $ [] 'Dynamic 'Dynamic
         'render-option-lines $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-option-lines (options)
-            if (empty? options) | $ join-str
+            if (empty? options) | $ join-string
               ->
                 assert-type options $ :: 'Map 'Tag 'Dynamic
                 &map:to-list
@@ -78,7 +78,7 @@
             :args $ [] 'Dynamic
         'render-options $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-options (o)
-            join-str
+            join-string
               map
                 map-entries $ decode-map-as o $ :: 'Map 'Tag 'Dynamic
                 fn (entry)
@@ -94,7 +94,7 @@
               assert= |color=red $ render-options $ {} (:color :red)
               assert= "|label=\"two words\"" $ render-options $ {} (:label "|two words")
         'str-spaced $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defn str-spaced (& children) (join-str children "| ")
+          :code $ quote $ defn str-spaced (& children) (join-string children "| ")
           :examples $ []
           :schema $ :: 'Fn $ {} (:rest 'Dynamic) (:return 'Dynamic)
             :args $ []
@@ -139,7 +139,7 @@
                     wo-log $ str (make-data-tree child child-id) &newline
                       node parent-id $ {} (:shape :diamond) (:style :filled) (:fillcolor :cyan) (:fontcolor :darkturquoise)
                       arrow parent-id child-id $ {}
-                join-str &newline
+                join-string &newline
               node (triadica.core/dot-scalar-text tree)
                 {} (:style :filled) (:fillcolor :darkgoldenrod1)
           :examples $ []
