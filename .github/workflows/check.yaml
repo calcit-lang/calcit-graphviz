@@ -38,6 +38,7 @@ jobs:
       - uses: calcit-lang/setup-calcit@v1.5.0
         with:
           tools: calcit,caps
+          version: "0.29.0"
           caps-version: "0.1.1"
 
       - name: Validate Calcit snapshot
@@ -49,15 +50,15 @@ jobs:
           git diff --exit-code -- calcit.cirru
           calcit calcit.cirru --check-only
           calcit calcit.cirru --entry run-tests --check-only
-          calcit calcit.cirru analyze check-public \
+          calcit calcit.cirru --check-only \
             --ns 'triadica.$meta' --ns triadica.core --ns triadica.main --ns triadica.test --format json
           calcit calcit.cirru test --require-match --summary-only --format json
           calcit calcit.cirru docs format-md docs/generate-dot-source.md --check
           calcit calcit.cirru docs check-md docs/generate-dot-source.md --failures-only
           calcit calcit.cirru --entry run-tests
-          calcit calcit.cirru analyze dynamic-methods --summary-only --format json | jq -e '.data.summary.findings == 0'
-          calcit calcit.cirru --entry run-tests analyze dynamic-methods --summary-only --format json | jq -e '.data.summary.findings == 0'
-          calcit calcit.cirru analyze quality --baseline config/calcit-quality.cirru
+          calcit analyze weak-types --only dynamic-method --summary-only --format json | jq -e '.data.summary.findings == 0'
+          calcit --entry run-tests analyze weak-types --only dynamic-method --summary-only --format json | jq -e '.data.summary.findings == 0'
+          calcit analyze weak-types --only deprecated-call --summary-only --format json | jq -e '.data.summary.calls == 0'
 
       - name: Build client with CDN asset URLs
         id: asset-path
@@ -76,6 +77,13 @@ jobs:
           echo "prefix=${asset_prefix}" >> "$GITHUB_OUTPUT"
           echo "base-url=${VITE_BASE_URL}" >> "$GITHUB_OUTPUT"
           calcit calcit.cirru js
+          node --input-type=module -e '
+            import * as core from "./js-out/triadica.core.mjs";
+            import * as procs from "./js-out/calcit.core.mjs";
+            const options = procs.parse_cirru_edn("{} (:label |Client)");
+            const dot = core.digraph(null, core.node("client", options), core.arrow("client", "server", null));
+            if (!dot.includes("label=Client") || !dot.includes("client -> server")) throw new Error("DOT JS mismatch");
+          '
           sudo apt-get update
           sudo apt-get install --yes graphviz
           yarn render
