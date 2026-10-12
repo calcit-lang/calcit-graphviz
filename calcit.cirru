@@ -16,7 +16,8 @@
       :defs $ {}
         'arrow $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn arrow (from to options)
-            if (empty? options)
+            if
+              or (nil? options) (empty? options)
               str "|  " $ str (wrap from) "| -> " $ wrap to
               str "|  " $ str-spaced (wrap from) |-> (wrap to) |[ (render-options options) |]
           :examples $ []
@@ -24,7 +25,8 @@
             :args $ [] 'String 'String 'Dynamic
         'connect $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn connect (from to options)
-            if (empty? options)
+            if
+              or (nil? options) (empty? options)
               str "|  " $ str (wrap from) "| -- " $ wrap to
               str "|  " $ str-spaced (wrap from) |-- (wrap to) |[ (render-options options) |]
           :examples $ []
@@ -58,7 +60,8 @@
             :args $ [] 'Dynamic
         'node $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn node (name options)
-            if (empty? options)
+            if
+              or (nil? options) (empty? options)
               str "|  " $ wrap name
               str "|  " (wrap name) "| [ " (render-options options) "| ]"
           :examples $ []
@@ -66,12 +69,14 @@
             :args $ [] 'String 'Dynamic
         'render-option-lines $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-option-lines (options)
-            if (empty? options) | $ join-string
-              map
-                map-entries $ decode-map-as options $ :: 'Map 'Tag 'Dynamic
-                fn (entry)
-                  str (:key entry) "| = " $ :value entry
-              , &newline
+            if
+              or (nil? options) (empty? options)
+              , | $ join-string
+                map
+                  map-entries $ decode-map-as options $ :: 'Map 'Tag 'Dynamic
+                  fn (entry)
+                    str (:key entry) "| = " $ :value entry
+                , &newline
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'String)
             :args $ [] 'Dynamic

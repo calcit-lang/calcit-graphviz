@@ -35,7 +35,8 @@ DOT graph/node/edge组合明确返回 String，节点标识和字符串 children
 String 合同。图属性使用 runtime decode 后的 MapEntry，不再通过断言与异构
 二元 List 读取。demo使用具名 loop，迭代参数由初值推断，不用 apply-args 的
 断言证明；counter使用defref，旧wo-log改为do。完整类型检查与两个附带测试通过。
-属性仍允许 nil/开放标量，树输入保留递归异构数据；部分 empty? 会走运行时分派。
+无属性的 nil 输入先显式处理，避免对 nil 调用 empty?；JS公共API smoke覆盖此
+实际兼容问题。属性仍允许开放标量，树输入保留递归异构数据；Map empty? 会走运行时分派。
 不把分析计数当作完整类型证明，也不声称全部类型债务清零。
 
 COS使用正式v1.2.0，上传验证仅由public-base-url和内置verify提供；生产前缀

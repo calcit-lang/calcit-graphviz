@@ -77,6 +77,13 @@ jobs:
           echo "prefix=${asset_prefix}" >> "$GITHUB_OUTPUT"
           echo "base-url=${VITE_BASE_URL}" >> "$GITHUB_OUTPUT"
           calcit calcit.cirru js
+          node --input-type=module -e '
+            import * as core from "./js-out/triadica.core.mjs";
+            import * as procs from "./js-out/calcit.core.mjs";
+            const options = procs.parse_cirru_edn("{} (:label |Client)");
+            const dot = core.digraph(null, core.node("client", options), core.arrow("client", "server", null));
+            if (!dot.includes("label=Client") || !dot.includes("client -> server")) throw new Error("DOT JS mismatch");
+          '
           sudo apt-get update
           sudo apt-get install --yes graphviz
           yarn render
