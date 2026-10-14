@@ -18,8 +18,8 @@ by `calcit docs read/search`.
 
 使用者影响：候选模块 `0.0.12` 将 Calcit CLI/procs 同步到正式 `0.29.3`，
 保留正式标准库 `0.2.41`、Caps `0.1.1` 和 Node24/Yarn4.18。
-DOT 公共 API、属性格式、十帧 demo 与 COS 前缀不变；候选仍需完成严格检查、
-原 native/JS/Graphviz 运行与远端 CI 后才能正式发布，不代表当前已完成验收。
+DOT 公共 API、属性格式、十帧 demo 与 COS 前缀不变；demo 的副作用入口明确返回 Unit，
+移除没有调用的内部 `concat-them` helper。候选仍需完成远端 CI 和审阅后才能正式发布。
 Snapshot 只由官方事务/raw revision守卫修改。
 native/default 与 run-tests target明确，前端沿用原JS编译和Graphviz渲染流程。
 
@@ -28,7 +28,7 @@ native/default 与 run-tests target明确，前端沿用原JS编译和Graphviz�
 预先显式转换，不能用声明/强转骗过边界。wrap现在有String→String合同；原空格
 加引号格式保持，但这不是完整DOT转义，不承诺不可信文本安全。开放输入尚未清零。
 
-CI使用四namespace的 `--check-only --ns`，覆盖22个全公开定义及两项附带测试；
+CI使用四namespace的 `--check-only --ns`，覆盖21个全公开定义及两项附带测试；
 保留严格入口/run-tests、当前 weak-types 动态分派零门禁并检查弃用调用为零。
 删除退役的 quality ratchet/baseline，不再在 CI 运行硬编码迁移 preset。
 AI按诊断审阅项目源码，类型合同和实际后端行为直接作为门禁。
