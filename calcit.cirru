@@ -116,11 +116,6 @@
           :code $ quote $ defref *counter 0
           :examples $ []
           :schema $ :: 'Dynamic
-        'concat-them $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defn concat-them (children) (concat & children)
-          :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Dynamic)
-            :args $ [] 'Dynamic
         'gen-counter-id! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn gen-counter-id! ()
             reset! *counter $ inc @*counter
@@ -131,7 +126,7 @@
         'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn main! () (render-demo!)
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+          :schema $ :: 'Fn $ {} (:return 'Unit)
             :args $ []
         'make-data-tree $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn make-data-tree (tree parent-id)
@@ -140,7 +135,7 @@
                 map $ fn (child)
                   let
                       child-id $ if (string? child) (to-string child) (gen-counter-id!)
-                    do $ str (make-data-tree child child-id) &newline
+                    str (make-data-tree child child-id) &newline
                       node parent-id $ {} (:shape :diamond) (:style :filled) (:fillcolor :cyan) (:fontcolor :darkturquoise)
                       arrow parent-id child-id $ {}
                 join-string &newline
@@ -151,7 +146,7 @@
             :args $ [] 'Dynamic 'String
         'make-tree-demo $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn make-tree-demo (vec-tree) (reset! *counter 0) (; println |data vec-tree)
-            do $ digraph ({})
+            digraph ({})
               node |graph $ {} (:ranksep 0.3) (:nodesep 0.25) (:splines :line)
               make-data-tree vec-tree $ gen-counter-id!
           :examples $ []
@@ -160,7 +155,7 @@
         'reload! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn reload! () (render-demo!)
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+          :schema $ :: 'Fn $ {} (:return 'Unit)
             :args $ []
         'render-demo! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-demo! ()
@@ -176,14 +171,15 @@
               if (< n 10)
                 do
                   ; println $ parse-cirru-list $ &format-ternary-tree acc
-                  write-file |output/demo.dot $ make-tree-demo $ do
-                    &list:first $ parse-cirru-list $ &format-ternary-tree acc
+                  write-file |output/demo.dot $ make-tree-demo $ &list:first
+                    parse-cirru-list $ &format-ternary-tree acc
                   println n |result: $ execute! $ [] |dot |-T |svg |-K |dot |output/demo.dot |-o (str |output/demo n |.svg)
                   recur (conj acc n) (inc n)
                 , nil
             ; write-file |output/demo.dot $ make-tree-demo tree-data
+            , &unit
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+          :schema $ :: 'Fn $ {} (:return 'Unit)
             :args $ []
           :tests $ [] $ %{} 'TestEntry (:name |formats-list-accumulator)
             :code $ quote $ assert= true
@@ -213,8 +209,9 @@
         %{} 'CodeEntry (:doc |)
           :code $ quote $ defn run-tests () (println "|%%%% test for lib") (println calcit-filename calcit-dirname)
             println $ digraph $ {} (:type :graph)
+            , &unit
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+          :schema $ :: 'Fn $ {} (:return 'Unit)
             :args $ []
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns triadica.test
