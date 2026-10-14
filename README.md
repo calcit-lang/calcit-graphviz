@@ -16,8 +16,10 @@ by `calcit docs read/search`.
 
 ### 正式 Calcit 0.29 与前端迁移
 
-使用正式 Calcit/procs 0.29.0、Caps 0.1.1、Node24/Yarn4.18；标准库升级到正式0.2.41，
-本分支准备模块版本0.0.11，发布前需通过 CI 和实际消费者验证。
+使用者影响：候选模块 `0.0.12` 将 Calcit CLI/procs 同步到正式 `0.29.3`，
+保留正式标准库 `0.2.41`、Caps `0.1.1` 和 Node24/Yarn4.18。
+DOT 公共 API、属性格式、十帧 demo 与 COS 前缀不变；候选仍需完成严格检查、
+原 native/JS/Graphviz 运行与远端 CI 后才能正式发布，不代表当前已完成验收。
 Snapshot 只由官方事务/raw revision守卫修改。
 native/default 与 run-tests target明确，前端沿用原JS编译和Graphviz渲染流程。
 

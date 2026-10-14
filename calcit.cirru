@@ -116,11 +116,6 @@
           :code $ quote $ defref *counter 0
           :examples $ []
           :schema $ :: 'Dynamic
-        'concat-them $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defn concat-them (children) (concat & children)
-          :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Dynamic)
-            :args $ [] 'Dynamic
         'gen-counter-id! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn gen-counter-id! ()
             reset! *counter $ inc @*counter
@@ -131,7 +126,7 @@
         'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn main! () (render-demo!)
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+          :schema $ :: 'Fn $ {} (:return 'Unit)
             :args $ []
         'make-data-tree $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn make-data-tree (tree parent-id)
@@ -160,7 +155,7 @@
         'reload! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn reload! () (render-demo!)
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+          :schema $ :: 'Fn $ {} (:return 'Unit)
             :args $ []
         'render-demo! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-demo! ()
@@ -182,8 +177,9 @@
                   recur (conj acc n) (inc n)
                 , nil
             ; write-file |output/demo.dot $ make-tree-demo tree-data
+            , &unit
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+          :schema $ :: 'Fn $ {} (:return 'Unit)
             :args $ []
           :tests $ [] $ %{} 'TestEntry (:name |formats-list-accumulator)
             :code $ quote $ assert= true
@@ -213,8 +209,9 @@
         %{} 'CodeEntry (:doc |)
           :code $ quote $ defn run-tests () (println "|%%%% test for lib") (println calcit-filename calcit-dirname)
             println $ digraph $ {} (:type :graph)
+            , &unit
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Dynamic)
+          :schema $ :: 'Fn $ {} (:return 'Unit)
             :args $ []
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns triadica.test
