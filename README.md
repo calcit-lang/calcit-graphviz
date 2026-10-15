@@ -14,12 +14,14 @@ See [Generate DOT source](docs/generate-dot-source.md) for the `digraph`,
 `graph`, `node`, `arrow`, and `connect` composition model. The page is indexed
 by `calcit docs read/search`.
 
-### 正式 Calcit 0.29 与前端迁移
+### 正式 Calcit 0.30 与前端迁移
 
-使用者影响：候选模块 `0.0.12` 将 Calcit CLI/procs 同步到正式 `0.29.3`，
-保留正式标准库 `0.2.41`、Caps `0.1.1` 和 Node24/Yarn4.18。
+使用者影响：在模块 `0.0.12` 基础上将 Calcit CLI/procs 同步到正式 `0.30.0`，
+标准库同步正式 `0.2.42`，保留 Caps `0.1.1` 和 Node24/Yarn4.18。
 DOT 公共 API、属性格式、十帧 demo 与 COS 前缀不变；demo 的副作用入口明确返回 Unit，
-移除没有调用的内部 `concat-them` helper。候选仍需完成远端 CI 和审阅后才能正式发布。
+此前已移除没有调用的内部 `concat-them` helper。本轮保留模块版本和公共 API；
+demo 与原附带测试改用 `first` 的公开 Option 合同，以无副作用的 nil fallback 保留旧取值行为。
+升级仍需通过原有 native/JS、文档、Graphviz 渲染与 COS 门禁后审阅，不代表已发布新模块。
 Snapshot 只由官方事务/raw revision守卫修改。
 native/default 与 run-tests target明确，前端沿用原JS编译和Graphviz渲染流程。
 
