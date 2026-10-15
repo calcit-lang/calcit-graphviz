@@ -171,8 +171,9 @@
               if (< n 10)
                 do
                   ; println $ parse-cirru-list $ &format-ternary-tree acc
-                  write-file |output/demo.dot $ make-tree-demo $ &list:first
-                    parse-cirru-list $ &format-ternary-tree acc
+                  write-file |output/demo.dot $ make-tree-demo $ .unwrap-or
+                    first $ parse-cirru-list $ &format-ternary-tree acc
+                    , nil
                   println n |result: $ execute! $ [] |dot |-T |svg |-K |dot |output/demo.dot |-o (str |output/demo n |.svg)
                   recur (conj acc n) (inc n)
                 , nil
@@ -183,8 +184,10 @@
             :args $ []
           :tests $ [] $ %{} 'TestEntry (:name |formats-list-accumulator)
             :code $ quote $ assert= true
-              list? $ &list:first $ parse-cirru-list
-                &format-ternary-tree $ conj (range 0) 0
+              list? $ .unwrap-or
+                first $ parse-cirru-list $ &format-ternary-tree
+                  conj (range 0) 0
+                , nil
         'tree-data $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def tree-data
             quote $
