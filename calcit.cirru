@@ -69,17 +69,28 @@
             :args $ [] 'String 'Dynamic
         'render-option-lines $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-option-lines (options)
-            if
-              or (nil? options) (empty? options)
-              , | $ join-string
-                map
-                  map-entries $ decode-map-as options $ :: 'Map 'Tag 'Dynamic
-                  fn (entry)
-                    str (:key entry) "| = " $ :value entry
-                , &newline
+            if (nil? options) | $ join-string
+              map
+                map-entries $ decode-map-as options $ :: 'Map 'Tag 'Dynamic
+                fn (entry)
+                  str
+                    to-string $ :key entry
+                    , "| = " $ wrap $ dot-scalar-text (:value entry)
+              , &newline
           :examples $ []
           :schema $ :: 'Fn $ {} (:return 'String)
             :args $ [] 'Dynamic
+          :tests $ [] $ %{} 'TestEntry (:name |graph-attribute-scalars)
+            :code $ quote $ do
+              assert= "|rankdir = LR" $ render-option-lines $ {} (:rankdir :LR)
+              assert= "|label = \"two words\"" $ render-option-lines $ {} (:label "|two words")
+              assert= | $ render-option-lines nil
+              assert= | $ render-option-lines $ {}
+              assert= true $ try
+                do
+                  render-option-lines $ {} $ :label ([] 1)
+                  , false
+                fn (error) true
         'render-options $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-options (o)
             join-string

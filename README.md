@@ -53,6 +53,24 @@ Actions采用核对过的正式tags，tags可移动，readonly/no credentials不
 native demo只写被忽略的output生成目录；CI运行它生成十帧，不运行用户服务。
 没有新增concurrently、checker、测试脚本，js-out/output/dist不入库。
 
+### Calcit 0.30.1 配对迁移
+
+使用者影响：DOT 公共 API、模块版本 `0.0.12`、旧 nil 属性行为与生产 COS 前缀不变。
+修复图级属性把 Tag 冒号写入 DOT 的问题：例如 `rankdir :LR` 现在生成合法 `rankdir = LR`，
+含空格的标签复用节点属性已有的引用规则。这不是对任意外部文本的完整 DOT 转义。
+CLI 与 `@calcit/procs` 配对使用已发布的 `0.30.1-alpha.5`，标准库使用正式 `0.2.43`；
+0.30.1 正式 CLI/npm 尚未配对发布，不把现有 tag 当作安装完成。
+
+默认 demo 保留 native 入口。新的 JS 生成器会拒绝它使用的 native-only 树格式化原语，
+因此 JS 验收改为编译已有 `run-tests` 入口并执行 smoke check，另行执行公共 API 断言与 Graphviz 渲染校验；
+没有添加新 helper、改写规则、验证脚本或放宽门禁。源码只修复实际 Graphviz 复现的问题，
+不为版本号强行重写；原两项附带测试保留，增加一项图级属性回归，关联 issue #37。
+
+本地已验证三项附带测试、完整定义检查、两个原入口、文档示例、JS suite、图级属性真实 Graphviz 渲染、
+新建 output 目录中的十帧 Graphviz SVG、原渲染命令和 CDN 构建。原生 Map 动态分派提示保留，
+不声称全部开放边界已清零。独立 CI 与 COS action 自身校验仍需以 PR 精确提交结果为准；
+本轮不合并、不发布模块或部署生产。
+
 ### License
 
 MIT
