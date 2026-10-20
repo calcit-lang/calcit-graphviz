@@ -62,7 +62,7 @@ CLI 与 `@calcit/procs` 配对使用已发布的 `0.30.1-alpha.5`，标准库使
 0.30.1 正式 CLI/npm 尚未配对发布，不把现有 tag 当作安装完成。
 
 默认 demo 保留 native 入口。新的 JS 生成器会拒绝它使用的 native-only 树格式化原语，
-因此 JS 验收改为编译已有 `run-tests` 入口，执行同一套纯库断言和公共 API smoke；
+因此 JS 验收改为编译已有 `run-tests` 入口并执行 smoke check，另行执行公共 API 断言与 Graphviz 渲染校验；
 没有添加新 helper、改写规则、验证脚本或放宽门禁。源码只修复实际 Graphviz 复现的问题，
 不为版本号强行重写；原两项附带测试保留，增加一项图级属性回归，关联 issue #37。
 
