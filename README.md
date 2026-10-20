@@ -53,6 +53,21 @@ Actions采用核对过的正式tags，tags可移动，readonly/no credentials不
 native demo只写被忽略的output生成目录；CI运行它生成十帧，不运行用户服务。
 没有新增concurrently、checker、测试脚本，js-out/output/dist不入库。
 
+### Calcit 0.30.1 配对迁移
+
+使用者影响：DOT 公共 API、模块版本 `0.0.12`、旧 nil 属性行为与生产 COS 前缀不变。
+CLI 与 `@calcit/procs` 配对使用已发布的 `0.30.1-alpha.5`，标准库使用正式 `0.2.43`；
+0.30.1 正式 CLI/npm 尚未配对发布，不把现有 tag 当作安装完成。
+
+默认 demo 保留 native 入口。新的 JS 生成器会拒绝它使用的 native-only 树格式化原语，
+因此 JS 验收改为编译已有 `run-tests` 入口，执行同一套纯库断言和公共 API smoke；
+没有添加新 helper、改写规则、验证脚本或放宽门禁。源码已通过完整 strict，未为版本更新强行重写。
+
+本地已验证原两项附带测试、完整定义检查、两个原入口、文档示例、JS suite、
+新建 output 目录中的十帧 Graphviz SVG、原渲染命令和 CDN 构建。原生 Map 动态分派提示保留，
+不声称全部开放边界已清零。独立 CI 与 COS action 自身校验仍需以 PR 精确提交结果为准；
+本轮不合并、不发布模块或部署生产。
+
 ### License
 
 MIT
