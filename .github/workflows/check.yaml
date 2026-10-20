@@ -78,7 +78,10 @@ jobs:
           echo "prefix=${asset_prefix}" >> "$GITHUB_OUTPUT"
           echo "base-url=${VITE_BASE_URL}" >> "$GITHUB_OUTPUT"
           calcit calcit.cirru --entry run-tests js
+          sudo apt-get update
+          sudo apt-get install --yes graphviz
           node --input-type=module -e '
+            import { spawnSync } from "node:child_process";
             import * as core from "./js-out/triadica.core.mjs";
             import * as procs from "./js-out/calcit.core.mjs";
             import { run_tests } from "./js-out/triadica.test.mjs";
@@ -86,9 +89,11 @@ jobs:
             const options = procs.parse_cirru_edn("{} (:label |Client)");
             const dot = core.digraph(null, core.node("client", options), core.arrow("client", "server", null));
             if (!dot.includes("label=Client") || !dot.includes("client -> server")) throw new Error("DOT JS mismatch");
+            const attributes = procs.parse_cirru_edn("{} (:rankdir :LR) (:label \"|two words\")");
+            const graph = core.digraph(attributes, core.node("client", null));
+            const rendered = spawnSync("dot", ["-Tsvg"], { input: graph, encoding: "utf8" });
+            if (rendered.status !== 0 || !rendered.stdout.includes("<svg")) throw new Error(rendered.stderr || "DOT graph attributes failed");
           '
-          sudo apt-get update
-          sudo apt-get install --yes graphviz
           yarn render
           calcit calcit.cirru
           yarn vite build --base="$VITE_BASE_URL"
