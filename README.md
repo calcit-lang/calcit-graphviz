@@ -2,6 +2,24 @@
 
 > render DOT file that can be handled by Graphviz
 
+### 正式 0.30.1 配对：使用者影响
+
+候选模块 **0.0.13** 配对正式 **Calcit / @calcit/procs 0.30.1** 和已发布 **std 0.2.44**。
+下游需同步精确工具链/依赖图并保留 Caps strict；候选号不等于已发布。
+本体是纯 DOT 生成器，不提供独立原生渲染库；native Demo 使用 std 并调用系统 `dot`，
+JS 验收继续选择已有 run-tests 入口，不将 native-only 树格式化原语当作 JS 支持。
+
+本次 Snapshot 与当前 main 相同。相对已发布 **0.0.12**，后续发版还会包含此前合并的图级
+Tag 属性修复（`rankdir :LR` → 合法 `rankdir = LR`）、空格标签引用、Demo 的 `first` Option
+读取和相应回归；这不是 Snapshot 与旧 tag 完全相同的 metadata-only 发布。
+nil 属性的原行为、开放标量边界和十帧 Demo 保留；引用规则不是完整 DOT 转义，外部文本仍须验证。
+
+原工作流同仓库 PR 自动上传隔离 COS 路径；合并产生 main push 后会直接更新 Demo 的生产
+COS 前缀，workflow 没有人工审批步骤，也没有服务器 rsync。合并前需完成实际验收和部署授权；
+本 PR 不部署下游业务应用，不添加或猜测服务器路径。
+本地原匹配 alpha.5 图已通过27定义/完整 strict、3项附带测试、原 native/JS suite、Graphviz
+真实渲染、十帧与 Vite 构建；正式图须由精确提交 CI 独立验收，不用旧结果代替。
+
 Triadica is now a pure Calcit DOT source generator. The former native
 `render-dot-file` bridge was an unimplemented `"TODO"` stub and was retired;
 use `triadica.core/digraph`, `graph`, `node`, `arrow`, and `connect` directly.
@@ -14,9 +32,9 @@ See [Generate DOT source](docs/generate-dot-source.md) for the `digraph`,
 `graph`, `node`, `arrow`, and `connect` composition model. The page is indexed
 by `calcit docs read/search`.
 
-### 正式 Calcit 0.30 与前端迁移
+### 0.30 历史迁移记录（非当前安装要求）
 
-使用者影响：在模块 `0.0.12` 基础上将 Calcit CLI/procs 同步到正式 `0.30.0`，
+历史记录：当时在模块 `0.0.12` 基础上将 Calcit CLI/procs 同步到正式 `0.30.0`，
 标准库同步正式 `0.2.42`，保留 Caps `0.1.1` 和 Node24/Yarn4.18。
 DOT 公共 API、属性格式、十帧 demo 与 COS 前缀不变；demo 的副作用入口明确返回 Unit，
 此前已移除没有调用的内部 `concat-them` helper。本轮保留模块版本和公共 API；
@@ -53,13 +71,13 @@ Actions采用核对过的正式tags，tags可移动，readonly/no credentials不
 native demo只写被忽略的output生成目录；CI运行它生成十帧，不运行用户服务。
 没有新增concurrently、checker、测试脚本，js-out/output/dist不入库。
 
-### Calcit 0.30.1 配对迁移
+### 0.30.1 alpha.5 历史迁移记录
 
-使用者影响：DOT 公共 API、模块版本 `0.0.12`、旧 nil 属性行为与生产 COS 前缀不变。
+历史记录：当时保留 DOT 公共 API、模块版本 `0.0.12`、旧 nil 属性行为与生产 COS 前缀。
 修复图级属性把 Tag 冒号写入 DOT 的问题：例如 `rankdir :LR` 现在生成合法 `rankdir = LR`，
 含空格的标签复用节点属性已有的引用规则。这不是对任意外部文本的完整 DOT 转义。
 CLI 与 `@calcit/procs` 配对使用已发布的 `0.30.1-alpha.5`，标准库使用正式 `0.2.43`；
-0.30.1 正式 CLI/npm 尚未配对发布，不把现有 tag 当作安装完成。
+这是正式 CLI/npm 发布前的历史验证；当前正式安装要求与验证范围见文首。
 
 默认 demo 保留 native 入口。新的 JS 生成器会拒绝它使用的 native-only 树格式化原语，
 因此 JS 验收改为编译已有 `run-tests` 入口并执行 smoke check，另行执行公共 API 断言与 Graphviz 渲染校验；
