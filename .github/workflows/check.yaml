@@ -38,19 +38,21 @@ jobs:
       - uses: calcit-lang/setup-calcit@v1.5.0
         with:
           tools: calcit,caps
-          version: "0.30.1-alpha.5"
+          deps-file: deps.cirru
           caps-version: "0.1.1"
 
       - name: Validate Calcit snapshot
         run: |
+          set -euo pipefail
           caps --strict --ci
           yarn install --immutable
           caps verify --toolchain
           calcit calcit.cirru edit format
           git diff --exit-code -- calcit.cirru
           calcit calcit.cirru --check-only
+          calcit calcit.cirru --check-only --all-defs
           calcit calcit.cirru --entry run-tests --check-only
-          calcit calcit.cirru fix --workflow strict --verify --format json
+          calcit calcit.cirru fix --workflow strict --verify --format json | jq -e '.data.workflow.status == "passed" and .diagnostics == []'
           calcit calcit.cirru --check-only \
             --ns 'triadica.$meta' --ns triadica.core --ns triadica.main --ns triadica.test --format json
           calcit calcit.cirru test --require-match --summary-only --format json
