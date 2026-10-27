@@ -2,23 +2,27 @@
 
 > render DOT file that can be handled by Graphviz
 
-### 正式 0.30.1 配对：使用者影响
+### 正式 0.31.0 配对：使用者影响
 
-候选模块 **0.0.13** 配对正式 **Calcit / @calcit/procs 0.30.1** 和已发布 **std 0.2.44**。
-下游需同步精确工具链/依赖图并保留 Caps strict；候选号不等于已发布。
-本体是纯 DOT 生成器，不提供独立原生渲染库；native Demo 使用 std 并调用系统 `dot`，
-JS 验收继续选择已有 run-tests 入口，不将 native-only 树格式化原语当作 JS 支持。
+候选模块 **0.0.13** 配对正式 **Calcit / @calcit/procs 0.31.0** 和已发布 **std 0.2.45**。
+下游需同步精确工具链和依赖图并保留 Caps strict；0.0.13 尚未发布，不移动历史 tag。
+本体是纯 DOT 生成器，不提供独立原生渲染库；native Demo 调用系统 `dot`，
+JS 验收使用已有 run-tests 入口；调用系统 dot 的完整 Demo 仍为 native。
 
-本次 Snapshot 与当前 main 相同。相对已发布 **0.0.12**，后续发版还会包含此前合并的图级
-Tag 属性修复（`rankdir :LR` → 合法 `rankdir = LR`）、空格标签引用、Demo 的 `first` Option
-读取和相应回归；这不是 Snapshot 与旧 tag 完全相同的 metadata-only 发布。
-nil 属性的原行为、开放标量边界和十帧 Demo 保留；引用规则不是完整 DOT 转义，外部文本仍须验证。
+本次更新工具链/标准库/runtime、lockfile，并迁移 Demo 的旧树格式解析。
+十帧改为显式三叶分组数据（0 到 9 个叶子）；布局会改变，不再把 FingerVec 调试文本
+误当作旧三叉树结构，也不模拟 Calcit List 的内部布局。DOT 公共 API 不变。
+生成器类型为 List<Number> → List<List<String>>，原累加器回归检查空树、单叶、跨组与九叶数据。
+迁移依据为 calcit-lang/calcit#2193，没有新增编译器兼容层。
+相对已发布 **0.0.12**，候选还包含此前已合并的图级 Tag 属性修复
+（`rankdir :LR` → 合法 `rankdir = LR`）、空格标签引用、Demo 的 first Option 读取及回归。
+nil 属性、开放标量边界和十帧 Demo 保留；引用规则不是完整 DOT 转义，外部文本仍须验证。
 
-原工作流同仓库 PR 自动上传隔离 COS 路径；合并产生 main push 后会直接更新 Demo 的生产
-COS 前缀，workflow 没有人工审批步骤，也没有服务器 rsync。合并前需完成实际验收和部署授权；
-本 PR 不部署下游业务应用，不添加或猜测服务器路径。
-本地原匹配 alpha.5 图已通过27定义/完整 strict、3项附带测试、原 native/JS suite、Graphviz
-真实渲染、十帧与 Vite 构建；正式图须由精确提交 CI 独立验收，不用旧结果代替。
+原工作流同仓库 PR 自动上传隔离前端 COS 预览，使用 action 自身校验；合并 main
+会更新原 Demo 生产前缀，没有服务器 rsync。本轮不合并或部署生产、不发布模块。
+本地正式 0.31.0 已通过全定义、完整 strict、原三项附带测试、native/JS suite、文档示例、
+Graphviz 实际渲染、十帧生成及 CDN 构建；独立 CI 与 COS 校验以本 PR 精确提交结果为准。
+Map `.empty?` 的既有运行时动态分派提示仍存在，不声称开放边界已清零。
 
 Triadica is now a pure Calcit DOT source generator. The former native
 `render-dot-file` bridge was an unimplemented `"TODO"` stub and was retired;
