@@ -21,8 +21,7 @@
               str "|  " $ str (wrap from) "| -> " $ wrap to
               str "|  " $ str-spaced (wrap from) |-> (wrap to) |[ (render-options options) |]
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'String)
-            :args $ [] 'String 'String 'Dynamic
+          :schema $ quote $ Fn String String Dynamic (-> String)
         'connect $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn connect (from to options)
             if
@@ -30,14 +29,12 @@
               str "|  " $ str (wrap from) "| -- " $ wrap to
               str "|  " $ str-spaced (wrap from) |-- (wrap to) |[ (render-options options) |]
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'String)
-            :args $ [] 'String 'String 'Dynamic
+          :schema $ quote $ Fn String String Dynamic (-> String)
         'digraph $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn digraph (options & children)
             str &newline "|digraph {" (render-option-lines options) &newline (join-string children &newline) &newline |} &newline
           :examples $ []
-          :schema $ :: 'Fn $ {} (:rest 'String) (:return 'String)
-            :args $ [] 'Dynamic
+          :schema $ quote $ Fn Dynamic & String (-> String)
         'dot-scalar-text $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn dot-scalar-text (value)
             cond
@@ -50,14 +47,12 @@
               (nil? value) (to-string value)
               true $ raise "|DOT values must be scalar text, tags, numbers, booleans, symbols or nil"
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'String)
-            :args $ [] 'Dynamic
+          :schema $ quote $ Fn Dynamic (-> String)
         'graph $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn graph (options & children)
             str &newline "|graph {" (render-option-lines options) &newline (join-string children &newline) &newline |} &newline
           :examples $ []
-          :schema $ :: 'Fn $ {} (:rest 'String) (:return 'String)
-            :args $ [] 'Dynamic
+          :schema $ quote $ Fn Dynamic & String (-> String)
         'node $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn node (name options)
             if
@@ -65,8 +60,7 @@
               str "|  " $ wrap name
               str "|  " (wrap name) "| [ " (render-options options) "| ]"
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'String)
-            :args $ [] 'String 'Dynamic
+          :schema $ quote $ Fn String Dynamic (-> String)
         'render-option-lines $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-option-lines (options)
             if (nil? options) | $ join-string
@@ -78,8 +72,7 @@
                     , "| = " $ wrap $ dot-scalar-text (:value entry)
               , &newline
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'String)
-            :args $ [] 'Dynamic
+          :schema $ quote $ Fn Dynamic (-> String)
           :tests $ [] $ %{} 'TestEntry (:name |graph-attribute-scalars)
             :code $ quote $ do
               assert= "|rankdir = LR" $ render-option-lines $ {} (:rankdir :LR)
@@ -102,8 +95,7 @@
                     , |= $ wrap $ dot-scalar-text (:value entry)
               , "| "
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'String)
-            :args $ [] 'Dynamic
+          :schema $ quote $ Fn Dynamic (-> String)
           :tests $ [] $ %{} 'TestEntry (:name |formats-typed-attributes)
             :code $ quote $ do
               assert= |color=red $ render-options $ {} (:color :red)
@@ -111,14 +103,12 @@
         'str-spaced $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn str-spaced (& children) (join-string children "| ")
           :examples $ []
-          :schema $ :: 'Fn $ {} (:rest 'String) (:return 'String)
-            :args $ []
+          :schema $ quote $ Fn & String (-> String)
         'wrap $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn wrap (x)
             if (includes? x "| ") (str "|\"" x "|\"") x
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'String)
-            :args $ [] 'String
+          :schema $ quote $ Fn String (-> String)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns triadica.core
     'triadica.main $ %{} 'FileEntry
@@ -126,7 +116,7 @@
         '*counter $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defref *counter 0
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ quote Dynamic
         'demo-tree $ %{} 'CodeEntry
           :doc "|Explicit ordered teaching tree: group numeric leaves in threes. Demo data only, not Calcit List storage layout."
           :code $ quote $ defn demo-tree (values)
@@ -137,21 +127,18 @@
                   .take (.drop values start) 3
                   fn (value) (str value)
           :examples $ []
-          :schema $ :: 'Fn $ {}
-            :args $ [] $ :: 'List 'Number
-            :return $ :: 'List $ :: 'List 'String
+          :schema $ quote $ Fn (List Number)
+            -> $ List $ List String
         'gen-counter-id! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn gen-counter-id! ()
             reset! *counter $ inc @*counter
             str |p @*counter
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'String)
-            :args $ []
+          :schema $ quote $ Fn (-> String)
         'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn main! () (render-demo!)
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Unit)
-            :args $ []
+          :schema $ quote $ Fn (-> Unit)
         'make-data-tree $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn make-data-tree (tree parent-id)
             if (list? tree)
@@ -166,21 +153,18 @@
               node (triadica.core/dot-scalar-text tree)
                 {} (:style :filled) (:fillcolor :darkgoldenrod1)
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'String)
-            :args $ [] 'Dynamic 'String
+          :schema $ quote $ Fn Dynamic String (-> String)
         'make-tree-demo $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn make-tree-demo (vec-tree) (reset! *counter 0) (; println |data vec-tree)
             digraph ({})
               node |graph $ {} (:ranksep 0.3) (:nodesep 0.25) (:splines :line)
               make-data-tree vec-tree $ gen-counter-id!
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'String)
-            :args $ [] 'Dynamic
+          :schema $ quote $ Fn Dynamic (-> String)
         'reload! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn reload! () (render-demo!)
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Unit)
-            :args $ []
+          :schema $ quote $ Fn (-> Unit)
         'render-demo! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-demo! ()
             ; write-file |output/demo.dot $ w-log $ digraph nil (node |A)
@@ -201,8 +185,7 @@
             ; write-file |output/demo.dot $ make-tree-demo tree-data
             , &unit
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Unit)
-            :args $ []
+          :schema $ quote $ Fn (-> Unit)
           :tests $ [] $ %{} 'TestEntry (:name |formats-list-accumulator)
             :code $ quote $ do
               assert= ([])
@@ -229,7 +212,7 @@
                 75 76 77
               78 79
           :examples $ []
-          :schema $ :: 'Dynamic
+          :schema $ quote Dynamic
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns triadica.main
           :require
@@ -242,8 +225,7 @@
             println $ digraph $ {} (:type :graph)
             , &unit
           :examples $ []
-          :schema $ :: 'Fn $ {} (:return 'Unit)
-            :args $ []
+          :schema $ quote $ Fn (-> Unit)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns triadica.test
           :require
