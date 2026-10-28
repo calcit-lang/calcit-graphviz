@@ -127,6 +127,19 @@
           :code $ quote $ defref *counter 0
           :examples $ []
           :schema $ :: 'Dynamic
+        'demo-tree $ %{} 'CodeEntry
+          :doc "|Explicit ordered teaching tree: group numeric leaves in threes. Demo data only, not Calcit List storage layout."
+          :code $ quote $ defn demo-tree (values)
+            .map
+              range 0 (.len values) 3
+              fn (start)
+                .map
+                  .take (.drop values start) 3
+                  fn (value) (str value)
+          :examples $ []
+          :schema $ :: 'Fn $ {}
+            :args $ [] $ :: 'List 'Number
+            :return $ :: 'List $ :: 'List 'String
         'gen-counter-id! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn gen-counter-id! ()
             reset! *counter $ inc @*counter
@@ -181,10 +194,7 @@
                 n 0
               if (< n 10)
                 do
-                  ; println $ parse-cirru-list $ &format-ternary-tree acc
-                  write-file |output/demo.dot $ make-tree-demo $ .unwrap-or
-                    first $ parse-cirru-list $ &format-ternary-tree acc
-                    , nil
+                  write-file |output/demo.dot $ make-tree-demo $ demo-tree acc
                   println n |result: $ execute! $ [] |dot |-T |svg |-K |dot |output/demo.dot |-o (str |output/demo n |.svg)
                   recur (conj acc n) (inc n)
                 , nil
@@ -194,11 +204,18 @@
           :schema $ :: 'Fn $ {} (:return 'Unit)
             :args $ []
           :tests $ [] $ %{} 'TestEntry (:name |formats-list-accumulator)
-            :code $ quote $ assert= true
-              list? $ .unwrap-or
-                first $ parse-cirru-list $ &format-ternary-tree
-                  conj (range 0) 0
-                , nil
+            :code $ quote $ do
+              assert= ([])
+                demo-tree $ range 0
+              assert=
+                [] $ [] |0
+                demo-tree $ range 1
+              assert=
+                [] ([] |0 |1 |2) ([] |3)
+                demo-tree $ range 4
+              assert=
+                [] ([] |0 |1 |2) ([] |3 |4 |5) ([] |6 |7 |8)
+                demo-tree $ range 9
         'tree-data $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def tree-data
             quote $
