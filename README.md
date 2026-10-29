@@ -2,27 +2,19 @@
 
 > render DOT file that can be handled by Graphviz
 
-### 正式 0.31.0 配对：使用者影响
+### 正式 0.32.0 配对候选：使用者影响
 
-候选模块 **0.0.13** 配对正式 **Calcit / @calcit/procs 0.31.0** 和已发布 **std 0.2.45**。
-下游需同步精确工具链和依赖图并保留 Caps strict；0.0.13 尚未发布，不移动历史 tag。
-本体是纯 DOT 生成器，不提供独立原生渲染库；native Demo 调用系统 `dot`，
-JS 验收使用已有 run-tests 入口；调用系统 dot 的完整 Demo 仍为 native。
+本候选配对 **Calcit CLI / @calcit/procs 0.32.0** 和已发布 **std 0.2.46**。消费者需同步精确工具链、重新生成 JS，并保留 Caps strict；旧 tag 不移动。
 
-本次更新工具链/标准库/runtime、lockfile，并迁移 Demo 的旧树格式解析。
-十帧改为显式三叶分组数据（0 到 9 个叶子）；布局会改变，不再把 FingerVec 调试文本
-误当作旧三叉树结构，也不模拟 Calcit List 的内部布局。DOT 公共 API 不变。
-生成器类型为 List<Number> → List<List<String>>，原累加器回归检查空树、单叶、跨组与九叶数据。
-迁移依据为 calcit-lang/calcit#2193，没有新增编译器兼容层。
-相对已发布 **0.0.12**，候选还包含此前已合并的图级 Tag 属性修复
-（`rankdir :LR` → 合法 `rankdir = LR`）、空格标签引用、Demo 的 first Option 读取及回归。
-nil 属性、开放标量边界和十帧 Demo 保留；引用规则不是完整 DOT 转义，外部文本仍须验证。
+20 个定义的官方查询视图与 0.31.0 源码完全一致，官方 format 仅规范化存储表示，函数实现与类型合同不变。本轮对齐工具链、标准库、runtime、lockfile 与说明；DOT 公共 API、属性格式、十帧 Demo 和原门禁保持。`identical?` 的 native 容器身份语义变更不影响本项目已有实现。
 
-原工作流同仓库 PR 自动上传隔离前端 COS 预览，使用 action 自身校验；合并 main
-会更新原 Demo 生产前缀，没有服务器 rsync。本轮不合并或部署生产、不发布模块。
-本地正式 0.31.0 已通过全定义、完整 strict、原三项附带测试、native/JS suite、文档示例、
-Graphviz 实际渲染、十帧生成及 CDN 构建；独立 CI 与 COS 校验以本 PR 精确提交结果为准。
-Map `.empty?` 的既有运行时动态分派提示仍存在，不声称开放边界已清零。
+原工作流在同仓库 PR 上传隔离前端 COS 预览，使用 action 内置校验；合并 main 会更新原 Demo 生产前缀，无服务器 rsync。本候选需完成原 native/JS、真实 Graphviz 渲染、十帧生成、构建及精确 CI 后才能发布，不把本地字段当作已发布 tag。开放标量边界和原 Map `.empty?` 运行时分派提示保留，不声称所有类型边界已闭合。
+
+### 0.31.0 历史迁移说明
+
+0.0.13 候选此前配对正式 0.31.0 和 std 0.2.45。Demo 十帧改为显式三叶分组数据（0 到 9 个叶子），不再把 FingerVec 调试文本当作旧三叉树结构，也不模拟 Calcit List 内部布局。生成器类型为 List<Number> → List<List<String>>，原回归覆盖空树、单叶、跨组与九叶数据，迁移依据为 calcit-lang/calcit#2193。
+
+相对已发布 0.0.12，还包含此前已合并的图级 Tag 属性修复（`rankdir :LR` → `rankdir = LR`）、空格标签引用、Demo first Option 读取及回归。引用规则并非完整 DOT 转义，外部文本仍须验证。本体为纯 DOT 生成器，native Demo 调用系统 `dot`，JS 使用既有 run-tests 入口；没有独立原生渲染库。
 
 Triadica is now a pure Calcit DOT source generator. The former native
 `render-dot-file` bridge was an unimplemented `"TODO"` stub and was retired;
