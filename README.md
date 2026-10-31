@@ -1,90 +1,58 @@
-## Triadica
+# Calcit Graphviz
 
-> render DOT file that can be handled by Graphviz
+纯 Calcit DOT 源码生成器，Demo 使用系统 Graphviz 渲染 SVG。
 
-### 正式 0.32.0 配对候选：使用者影响
+## 对使用者的影响
 
-本候选配对 **Calcit CLI / @calcit/procs 0.32.0** 和已发布 **std 0.2.46**。消费者需同步精确工具链、重新生成 JS，并保留 Caps strict；旧 tag 不移动。
+0.0.13 候选配对正式 Calcit / `@calcit/procs` **0.32.1** 与已发布 `calcit.std` **0.2.46**，需重新安装工具链并生成 JS。
+候选尚未发布，旧 tag 不移动；本 PR 不合并、发版或生产部署。
+DOT 公共 API、属性格式、原十帧 Demo 和 COS 前缀保持，不更换布局算法。
 
-20 个定义的官方查询视图与 0.31.0 源码完全一致，官方 format 仅规范化存储表示，函数实现与类型合同不变。本轮对齐工具链、标准库、runtime、lockfile 与说明；DOT 公共 API、属性格式、十帧 Demo 和原门禁保持。`identical?` 的 native 容器身份语义变更不影响本项目已有实现。
+本轮通过官方 schema 工具将 Demo 计数器声明为真实 `Ref Number`，修复严格检查中 deref 缺少泛型 Ref 证据的问题。
+其初值 0、reset 0、inc 递增及所有代码、原测试保持；不改为 Dynamic、不增加强转或编译器改写规则。
+移除旧 procs 0.29.3 / finger-vec 0.1.1 的包龄豁免，使用一小时等待且无单包例外。
 
-原工作流在同仓库 PR 上传隔离前端 COS 预览，使用 action 内置校验；合并 main 会更新原 Demo 生产前缀，无服务器 rsync。本候选需完成原 native/JS、真实 Graphviz 渲染、十帧生成、构建及精确 CI 后才能发布，不把本地字段当作已发布 tag。开放标量边界和原 Map `.empty?` 运行时分派提示保留，不声称所有类型边界已闭合。
+## API 与边界
 
-### 0.31.0 历史迁移说明
+使用 `triadica.core/digraph`、`graph`、`node`、`arrow`、`connect` 组合 DOT，详见 [Generate DOT source](docs/generate-dot-source.md)。
+安装应选择实际已发布 tag：`caps add calcit-lang/calcit-graphviz@<tag>`，然后运行 `caps`。
+原未实现的 native render-dot-file 桥已退役，不重新引入占位接口。
 
-0.0.13 候选此前配对正式 0.31.0 和 std 0.2.45。Demo 十帧改为显式三叶分组数据（0 到 9 个叶子），不再把 FingerVec 调试文本当作旧三叉树结构，也不模拟 Calcit List 内部布局。生成器类型为 List<Number> → List<List<String>>，原回归覆盖空树、单叶、跨组与九叶数据，迁移依据为 calcit-lang/calcit#2193。
+图级 Tag 属性仍生成 `rankdir = LR`，含空格的标签按原规则加引号；这不是完整 DOT 转义，外部文本仍需验证。
+属性使用受检 Map 和标量边界，保留原 nil 属性行为，不声称所有开放类型已闭合。
+原 Map `.empty?` 运行时分派提示保留，不将静态零动态调用报告等同于没有运行时分派。
 
-相对已发布 0.0.12，还包含此前已合并的图级 Tag 属性修复（`rankdir :LR` → `rankdir = LR`）、空格标签引用、Demo first Option 读取及回归。引用规则并非完整 DOT 转义，外部文本仍须验证。本体为纯 DOT 生成器，native Demo 调用系统 `dot`，JS 使用既有 run-tests 入口；没有独立原生渲染库。
+Demo 使用显式三叶分组数据，生成 0 到 9 个叶子的十帧，不把 FingerVec 调试文本当作内部树结构。
+原 key 0 重置与 fullscreen 事件保持；Vite 打包 SVG 并生成资源 URL，避免原 /output 路径遗漏 CDN base。
 
-Triadica is now a pure Calcit DOT source generator. The former native
-`render-dot-file` bridge was an unimplemented `"TODO"` stub and was retired;
-use `triadica.core/digraph`, `graph`, `node`, `arrow`, and `connect` directly.
+## 开发与验收
 
-### Usages
+使用 Node.js 24、Yarn 4.18.0、Graphviz 和配对 Calcit 0.32.1。
 
-Install with `caps add calcit-lang/calcit-graphviz@<tag>` and run `caps`.
+```sh
+caps --strict --ci
+yarn install --immutable
+caps verify --toolchain
+calcit --check-only --all-defs
+calcit fix --workflow strict --verify
+calcit --entry run-tests --check-only
+calcit test --require-match
+calcit --entry run-tests
+calcit --entry run-tests js
+```
 
-See [Generate DOT source](docs/generate-dot-source.md) for the `digraph`,
-`graph`, `node`, `arrow`, and `connect` composition model. The page is indexed
-by `calcit docs read/search`.
+JS 测试使用原 run-tests 入口，默认 native Demo 用 `calcit calcit.cirru` 生成原十帧，`yarn render` 保留原 dot 命令。
+本地通过发布依赖严格安装、工具链配对、immutable、28 个全定义、完整 strict、22 个公开定义、原三项测试、双入口动态方法零发现与零弃用调用。
+原 native/JS 回归、真实图属性 SVG 渲染、十帧生成、CDN 构建及开发文档检查通过；本轮未重复浏览器动画、重置或 fullscreen 交互验收。
 
-### 0.30 历史迁移记录（非当前安装要求）
+## 前端发布
 
-历史记录：当时在模块 `0.0.12` 基础上将 Calcit CLI/procs 同步到正式 `0.30.0`，
-标准库同步正式 `0.2.42`，保留 Caps `0.1.1` 和 Node24/Yarn4.18。
-DOT 公共 API、属性格式、十帧 demo 与 COS 前缀不变；demo 的副作用入口明确返回 Unit，
-此前已移除没有调用的内部 `concat-them` helper。本轮保留模块版本和公共 API；
-demo 与原附带测试改用 `first` 的公开 Option 合同，以无副作用的 nil fallback 保留旧取值行为。
-升级仍需通过原有 native/JS、文档、Graphviz 渲染与 COS 门禁后审阅，不代表已发布新模块。
-Snapshot 只由官方事务/raw revision守卫修改。
-native/default 与 run-tests target明确，前端沿用原JS编译和Graphviz渲染流程。
+同仓库 PR 沿用独立 number/run/attempt 的 COS 预览前缀，fork PR 不上传。
+上传只包含 dist，校验使用 COS Action v1.2.0 自身能力，不额外复制验证脚本。
+生产仍只在 main 当前提交更新原前缀，过期任务跳过；当前提交预检不是原子锁。
+本工作流无 rsync，不新增服务器路径；Actions 使用精确正式 tag，接受 tag 可移动的维护取舍。
+`js-out`、`output`、`dist` 为忽略的生成目录，不进入版本库。
 
-属性改用受检 `Map<Tag,Dynamic>` 与 `map-entries`，保留Tag key证据；标量转换
-按 String/Tag/Number/Bool/Symbol/Nil 实际收窄后调用 to-string。其他属性值必须
-预先显式转换，不能用声明/强转骗过边界。wrap现在有String→String合同；原空格
-加引号格式保持，但这不是完整DOT转义，不承诺不可信文本安全。开放输入尚未清零。
-
-CI使用四namespace的 `--check-only --ns`，覆盖21个全公开定义及两项附带测试；
-保留严格入口/run-tests、当前 weak-types 动态分派零门禁并检查弃用调用为零。
-删除退役的 quality ratchet/baseline，不再在 CI 运行硬编码迁移 preset。
-AI按诊断审阅项目源码，类型合同和实际后端行为直接作为门禁。
-
-DOT graph/node/edge组合明确返回 String，节点标识和字符串 children 使用具体
-String 合同。图属性使用 runtime decode 后的 MapEntry，不再通过断言与异构
-二元 List 读取。demo使用具名 loop，迭代参数由初值推断，不用 apply-args 的
-断言证明；counter使用defref，旧wo-log改为do。完整类型检查与两个附带测试通过。
-无属性的 nil 输入先显式处理，避免对 nil 调用 empty?；JS公共API smoke覆盖此
-实际兼容问题。属性仍允许开放标量，树输入保留递归异构数据；Map empty? 会走运行时分派。
-不把分析计数当作完整类型证明，也不声称全部类型债务清零。
-
-COS使用正式v1.2.0，上传验证仅由public-base-url和内置verify提供；生产前缀
-保持，PR改为number/run/attempt隔离。队列串行、不取消上传，上传前检查main HEAD，
-过期任务跳过；预检不是原子锁。无原服务器部署步骤，不新增或猜测server路径。
-Actions采用核对过的正式tags，tags可移动，readonly/no credentials不代表不可变。
-
-原前端定时器的 `/output/demoN.svg` 不会进入Vite产物，也不匹配CDN前缀；现在
-通过Vite glob打包原十帧并使用生成URL，key 0重置和既有fullscreen事件保持。
-native demo只写被忽略的output生成目录；CI运行它生成十帧，不运行用户服务。
-没有新增concurrently、checker、测试脚本，js-out/output/dist不入库。
-
-### 0.30.1 alpha.5 历史迁移记录
-
-历史记录：当时保留 DOT 公共 API、模块版本 `0.0.12`、旧 nil 属性行为与生产 COS 前缀。
-修复图级属性把 Tag 冒号写入 DOT 的问题：例如 `rankdir :LR` 现在生成合法 `rankdir = LR`，
-含空格的标签复用节点属性已有的引用规则。这不是对任意外部文本的完整 DOT 转义。
-CLI 与 `@calcit/procs` 配对使用已发布的 `0.30.1-alpha.5`，标准库使用正式 `0.2.43`；
-这是正式 CLI/npm 发布前的历史验证；当前正式安装要求与验证范围见文首。
-
-默认 demo 保留 native 入口。新的 JS 生成器会拒绝它使用的 native-only 树格式化原语，
-因此 JS 验收改为编译已有 `run-tests` 入口并执行 smoke check，另行执行公共 API 断言与 Graphviz 渲染校验；
-没有添加新 helper、改写规则、验证脚本或放宽门禁。源码只修复实际 Graphviz 复现的问题，
-不为版本号强行重写；原两项附带测试保留，增加一项图级属性回归，关联 issue #37。
-
-本地已验证三项附带测试、完整定义检查、两个原入口、文档示例、JS suite、图级属性真实 Graphviz 渲染、
-新建 output 目录中的十帧 Graphviz SVG、原渲染命令和 CDN 构建。原生 Map 动态分派提示保留，
-不声称全部开放边界已清零。独立 CI 与 COS action 自身校验仍需以 PR 精确提交结果为准；
-本轮不合并、不发布模块或部署生产。
-
-### License
+## License
 
 MIT

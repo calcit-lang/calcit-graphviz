@@ -116,7 +116,7 @@
         '*counter $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defref *counter 0
           :examples $ []
-          :schema $ quote Dynamic
+          :schema $ quote $ Ref Number
         'demo-tree $ %{} 'CodeEntry
           :doc "|Explicit ordered teaching tree: group numeric leaves in threes. Demo data only, not Calcit List storage layout."
           :code $ quote $ defn demo-tree (values)
