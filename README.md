@@ -40,9 +40,10 @@ calcit --entry run-tests --check-only
 calcit test --require-match
 calcit --entry run-tests
 calcit --entry run-tests js
+node --input-type=module -e 'import { run_tests } from "./js-out/triadica.test.mjs"; run_tests();'
 ```
 
-JS 测试使用原 run-tests 入口，默认 native Demo 用 `calcit calcit.cirru` 生成原十帧，`yarn render` 保留原 dot 命令。
+JS 测试使用原 run-tests 入口，生成后通过上述 Node 命令实际执行。默认 native Demo 先运行 `mkdir -p output`，再用 `calcit calcit.cirru` 生成原十帧；`yarn render` 保留原 dot 命令及其目录创建行为。
 本地通过发布依赖严格安装、工具链配对、immutable、28 个全定义、完整 strict、22 个公开定义、原三项测试、双入口动态方法零发现与零弃用调用。
 原 native/JS 回归、真实图属性 SVG 渲染、十帧生成、CDN 构建及开发文档检查通过；本轮未重复浏览器动画、重置或 fullscreen 交互验收。
 
