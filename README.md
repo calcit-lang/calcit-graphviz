@@ -11,6 +11,7 @@ DOT 公共 API、属性格式、原十帧 Demo 和 COS 前缀保持，不更换�
 本轮通过官方 schema 工具将 Demo 计数器声明为真实 `Ref Number`，修复严格检查中 deref 缺少泛型 Ref 证据的问题。
 其初值 0、reset 0、inc 递增及所有代码、原测试保持；不改为 Dynamic、不增加强转或编译器改写规则。
 移除旧 procs 0.29.3 / finger-vec 0.1.1 的包龄豁免，使用一小时等待且无单包例外。
+门禁适用于新解析版本；immutable 复用 lockfile 的已有解析，不会逐次重新核对发布时间。
 
 ## API 与边界
 
