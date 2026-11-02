@@ -4,14 +4,14 @@
 
 ## 对使用者的影响
 
-0.0.13 候选配对正式 Calcit / `@calcit/procs` **0.32.1** 与已发布 `calcit.std` **0.2.47**，需重新安装工具链并生成 JS。
-候选尚未发布，旧 tag 不移动；本 PR 不合并、发版或生产部署。
+0.0.14 候选配对正式 Calcit / `@calcit/procs` **0.34.0** 与已发布 `calcit.std` **0.2.48**，需同步工具链并重新生成 JS。
+候选尚未发布，旧 tag 不移动；本 PR 仅上传隔离前端预览，不合并或生产部署。
 DOT 公共 API、属性格式、原十帧 Demo 和 COS 前缀保持，不更换布局算法。
 
-本轮通过官方 schema 工具将 Demo 计数器声明为真实 `Ref Number`，修复严格检查中 deref 缺少泛型 Ref 证据的问题。
-其初值 0、reset 0、inc 递增及所有代码、原测试保持；不改为 Dynamic、不增加强转或编译器改写规则。
-移除旧 procs 0.29.3 / finger-vec 0.1.1 的包龄豁免，使用一小时等待且无单包例外。
-门禁适用于新解析版本；immutable 复用 lockfile 的已有解析，不会逐次重新核对发布时间。
+本轮使用官方受保护 formatter 规范受检解码目标的类型写法，保留全部原代码合同、测试和元数据。
+Demo 计数器继续使用真实 `Ref Number`；nil 属性与标量检查保留，不增加 Dynamic、强转、脚本或预算。
+属性值还支持 nil，后续闭合值类型需保留这个兼容边界，并以正式 union 解码器验收；不在本次工具链维护中改变接受行为。
+一小时 npm 包龄门禁与 immutable 安装保持，无单包豁免。
 
 ## API 与边界
 
@@ -28,7 +28,7 @@ Demo 使用显式三叶分组数据，生成 0 到 9 个叶子的十帧，不把
 
 ## 开发与验收
 
-使用 Node.js 24、Yarn 4.18.0、Graphviz 和配对 Calcit 0.32.1。
+使用 Node.js 24、Yarn 4.18.0、Graphviz 和配对 Calcit 0.34.0。
 
 ```sh
 caps --strict --ci
@@ -44,7 +44,7 @@ node --input-type=module -e 'import { run_tests } from "./js-out/triadica.test.m
 ```
 
 JS 测试使用原 run-tests 入口，生成后通过上述 Node 命令实际执行。默认 native Demo 先运行 `mkdir -p output`，再用 `calcit calcit.cirru` 生成原十帧；`yarn render` 保留原 dot 命令及其目录创建行为。
-本地通过发布依赖严格安装、工具链配对、immutable、28 个全定义、完整 strict、22 个公开定义、原三项测试、双入口动态方法零发现与零弃用调用。
+本轮继续执行发布依赖严格安装、工具链配对、immutable、全部定义、完整 strict、原公开定义与三项测试、双入口动态方法及弃用检查。
 原 native/JS 回归、真实图属性 SVG 渲染、十帧生成、CDN 构建及开发文档检查通过；本轮未重复浏览器动画、重置或 fullscreen 交互验收。
 
 ## 前端发布

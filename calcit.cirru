@@ -65,7 +65,7 @@
           :code $ quote $ defn render-option-lines (options)
             if (nil? options) | $ join-string
               map
-                map-entries $ decode-map-as options $ :: 'Map 'Tag 'Dynamic
+                map-entries $ decode-map-as options $ quote (Map Tag Dynamic)
                 fn (entry)
                   str
                     to-string $ :key entry
@@ -88,7 +88,7 @@
           :code $ quote $ defn render-options (o)
             join-string
               map
-                map-entries $ decode-map-as o $ :: 'Map 'Tag 'Dynamic
+                map-entries $ decode-map-as o $ quote (Map Tag Dynamic)
                 fn (entry)
                   str
                     to-string $ :key entry
