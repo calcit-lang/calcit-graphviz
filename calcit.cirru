@@ -14,6 +14,10 @@
   :files $ {}
     'triadica.core $ %{} 'FileEntry
       :defs $ {}
+        'DotScalar $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defunion DotScalar String Tag Number Bool Symbol
+          :examples $ []
+          :schema $ quote UnionDef
         'arrow $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn arrow (from to options)
             if
@@ -37,15 +41,17 @@
           :schema $ quote $ Fn Dynamic & String (-> String)
         'dot-scalar-text $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn dot-scalar-text (value)
-            cond
-                string? value
-                to-string value
-              (tag? value) (to-string value)
-              (number? value) (to-string value)
-              (bool? value) (to-string value)
-              (symbol? value) (to-string value)
-              (nil? value) (to-string value)
-              true $ raise "|DOT values must be scalar text, tags, numbers, booleans, symbols or nil"
+            if (nil? value) (to-string nil)
+              match (try-decode-map-as value triadica.core/DotScalar)
+                (:ok scalar)
+                  match scalar
+                    (String text) (to-string text)
+                    (Tag tag) (to-string tag)
+                    (Number number) (to-string number)
+                    (Bool boolean) (to-string boolean)
+                    (Symbol symbol) (to-string symbol)
+                (:err _)
+                  raise "|DOT values must be scalar text, tags, numbers, booleans, symbols or nil"
           :examples $ []
           :schema $ quote $ Fn Dynamic (-> String)
         'graph $ %{} 'CodeEntry (:doc |)
@@ -65,7 +71,7 @@
           :code $ quote $ defn render-option-lines (options)
             if (nil? options) | $ join-string
               map
-                map-entries $ decode-map-as options $ quote (Map Tag Dynamic)
+                map-entries $ decode-map-as options $ Map Tag Dynamic
                 fn (entry)
                   str
                     to-string $ :key entry
@@ -88,7 +94,7 @@
           :code $ quote $ defn render-options (o)
             join-string
               map
-                map-entries $ decode-map-as o $ quote (Map Tag Dynamic)
+                map-entries $ decode-map-as o $ Map Tag Dynamic
                 fn (entry)
                   str
                     to-string $ :key entry
