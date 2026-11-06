@@ -4,13 +4,11 @@
 
 ## 对使用者的影响
 
-0.0.14 候选配对正式 Calcit / `@calcit/procs` **0.34.0** 与已发布 `calcit.std` **0.2.48**，需同步工具链并重新生成 JS。
+0.0.14 候选配对正式 Calcit / `@calcit/procs` **0.35.1** 与已发布 `calcit.std` **0.2.52**，需同步工具链并重新生成 JS。
 候选尚未发布，旧 tag 不移动；本 PR 仅上传隔离前端预览，不合并或生产部署。
 DOT 公共 API、属性格式、原十帧 Demo 和 COS 前缀保持，不更换布局算法。
 
-本轮使用官方受保护 formatter 规范受检解码目标的类型写法，保留全部原代码合同、测试和元数据。
-Demo 计数器继续使用真实 `Ref Number`；nil 属性与标量检查保留，不增加 Dynamic、强转、脚本或预算。
-属性值还支持 nil，后续闭合值类型需保留这个兼容边界，并以正式 union 解码器验收；不在本次工具链维护中改变接受行为。
+DOT 的五种非空标量通过 `DotScalar = String | Tag | Number | Bool | Symbol` 解码并匹配。入口仍接受既有 nil 值，非法属性仍返回原校验错误。Demo 计数器继续使用 `Ref Number`。
 一小时 npm 包龄门禁与 immutable 安装保持，无单包豁免。
 
 ## API 与边界
@@ -28,7 +26,7 @@ Demo 使用显式三叶分组数据，生成 0 到 9 个叶子的十帧，不把
 
 ## 开发与验收
 
-使用 Node.js 24、Yarn 4.18.0、Graphviz 和配对 Calcit 0.34.0。
+使用 Node.js 24、Yarn 4.18.0、Graphviz 和配对 Calcit 0.35.1。
 
 ```sh
 caps --strict --ci
