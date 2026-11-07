@@ -91,6 +91,7 @@ jobs:
             const options = procs.parse_cirru_edn("{} (:label |Client)");
             const dot = core.digraph(null, core.node("client", options), core.arrow("client", "server", null));
             if (!dot.includes("label=Client") || !dot.includes("client -> server")) throw new Error("DOT JS mismatch");
+            if (core.render_options(procs.parse_cirru_edn("{} (:label nil)")) !== "label=") throw new Error("DOT nil attribute changed");
             const attributes = procs.parse_cirru_edn("{} (:rankdir :LR) (:label \"|two words\")");
             const graph = core.digraph(attributes, core.node("client", null));
             const rendered = spawnSync("dot", ["-Tsvg"], { input: graph, encoding: "utf8" });
