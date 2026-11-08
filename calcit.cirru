@@ -20,16 +20,14 @@
           :schema $ quote UnionDef
         'arrow $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn arrow (from to options)
-            if
-              or (nil? options) (empty? options)
+            if (empty-options? options)
               str "|  " $ str (wrap from) "| -> " $ wrap to
               str "|  " $ str-spaced (wrap from) |-> (wrap to) |[ (render-options options) |]
           :examples $ []
           :schema $ quote $ Fn String String Dynamic (-> String)
         'connect $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn connect (from to options)
-            if
-              or (nil? options) (empty? options)
+            if (empty-options? options)
               str "|  " $ str (wrap from) "| -- " $ wrap to
               str "|  " $ str-spaced (wrap from) |-- (wrap to) |[ (render-options options) |]
           :examples $ []
@@ -44,6 +42,12 @@
             format-scalar $ read-scalar value
           :examples $ []
           :schema $ quote $ Fn Dynamic (-> String)
+        'empty-options? $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn empty-options? (options)
+            if (map? options) (&map:empty? options)
+              or (nil? options) (empty? options)
+          :examples $ []
+          :schema $ quote $ Fn Dynamic (-> Bool) (:open :decode)
         'format-scalar $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn format-scalar (value)
             match value
@@ -64,8 +68,7 @@
           :schema $ quote $ Fn Dynamic (& String) (-> String)
         'node $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn node (name options)
-            if
-              or (nil? options) (empty? options)
+            if (empty-options? options)
               str "|  " $ wrap name
               str "|  " (wrap name) "| [ " (render-options options) "| ]"
           :examples $ []
@@ -82,17 +85,29 @@
             -> $ Option triadica.core/DotScalar
         'render-attributes $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-attributes (options assignment separator)
-            join-string
+            render-decoded-attributes
               map (map-entries options)
                 fn (entry)
-                  hint-fn $ Fn (MapEntry Tag Dynamic) (-> String)
-                  str
-                    to-string $ :key entry
-                    , assignment $ wrap $ format-scalar
-                      read-scalar $ :value entry
+                  hint-fn $ Fn (MapEntry Tag Dynamic)
+                    -> $ Tuple Tag $ Option triadica.core/DotScalar
+                  [] (:key entry)
+                    read-scalar $ :value entry
+              , assignment separator
+          :examples $ []
+          :schema $ quote $ Fn (Map Tag Dynamic) String String (-> String) (:open :decode)
+        'render-decoded-attributes $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn render-decoded-attributes (attributes assignment separator)
+            join-string
+              map attributes $ fn (entry)
+                hint-fn $ Fn
+                  Tuple Tag $ Option triadica.core/DotScalar
+                  -> String
+                let[] (key value) entry $ str (to-string key) assignment $ wrap (format-scalar value)
               , separator
           :examples $ []
-          :schema $ quote $ Fn (Map Tag Dynamic) String String (-> String)
+          :schema $ quote $ Fn
+            List $ Tuple Tag $ Option triadica.core/DotScalar
+            , String String (-> String)
         'render-option-lines $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-option-lines (options)
             if (nil? options) | $ render-attributes
