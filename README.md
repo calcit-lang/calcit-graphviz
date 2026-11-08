@@ -4,7 +4,7 @@
 
 ## 对使用者的影响
 
-0.0.15 候选配对正式 Calcit / `@calcit/procs` **0.37.0** 与已发布 `calcit.std` **0.2.53**，需同步工具链并重新生成 JS。
+0.0.15 候选配对正式 Calcit / `@calcit/procs` **0.38.0** 与已发布 `calcit.std` **0.2.53**，需同步工具链并重新生成 JS。
 候选尚未发布，旧 tag 不移动；本 PR 仅上传隔离前端预览，不合并或生产部署。
 DOT 图、节点、边的调用和属性格式沿用原版本。直接调用 `triadica.main/make-data-tree` 时使用 `Option DotTree`；`make-tree-demo` 继续接收原树数据。
 
@@ -18,15 +18,15 @@ DOT 的五种非空标量通过 `DotScalar = String | Tag | Number | Bool | Symb
 原未实现的 native render-dot-file 桥已退役，不重新引入占位接口。
 
 图级 Tag 属性仍生成 `rankdir = LR`，含空格的标签按原规则加引号；这不是完整 DOT 转义，外部文本仍需验证。
-属性使用受检 Map 和标量边界，保留原 nil 属性行为，不声称所有开放类型已闭合。
-原 Map `.empty?` 运行时分派提示保留，不将静态零动态调用报告等同于没有运行时分派。
+外部属性 Map 先按原顺序解码为 Tag 与 `Option<DotScalar>` 的键值对，渲染只接收这一具体类型。nil 属性仍按空值格式化。
+节点与边直接检查 Map 是否为空，保留旧输入的空值判断行为。
 
 Demo 使用显式三叶分组数据，生成 0 到 9 个叶子的十帧，不把 FingerVec 调试文本当作内部树结构。
 原 key 0 重置与 fullscreen 事件保持；Vite 打包 SVG 并生成资源 URL，避免原 /output 路径遗漏 CDN base。
 
 ## 开发与验收
 
-使用 Node.js 24、Yarn 4.18.0、Graphviz 和配对 Calcit 0.37.0。
+使用 Node.js 24、Yarn 4.18.0、Graphviz 和配对 Calcit 0.38.0。
 
 ```sh
 caps --strict --ci
@@ -48,7 +48,7 @@ JS 测试使用原 run-tests 入口，生成后通过上述 Node 命令实际执
 ## 前端发布
 
 同仓库 PR 沿用独立 number/run/attempt 的 COS 预览前缀，fork PR 不上传。
-上传只包含 dist，校验使用 COS Action v1.2.0 自身能力，不额外复制验证脚本。
+上传只包含 dist，校验使用 COS Action v1.3.0 自身能力，不额外复制验证脚本。
 生产仍只在 main 当前提交更新原前缀，过期任务跳过；当前提交预检不是原子锁。
 本工作流无 rsync，不新增服务器路径；Actions 使用精确正式 tag，接受 tag 可移动的维护取舍。
 `js-out`、`output`、`dist` 为忽略的生成目录，不进入版本库。
