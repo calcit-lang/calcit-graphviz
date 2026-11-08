@@ -38,27 +38,30 @@
           :code $ quote $ defn digraph (options & children)
             str &newline "|digraph {" (render-option-lines options) &newline (join-string children &newline) &newline |} &newline
           :examples $ []
-          :schema $ quote $ Fn Dynamic & String (-> String)
+          :schema $ quote $ Fn Dynamic (& String) (-> String)
         'dot-scalar-text $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn dot-scalar-text (value)
-            if (nil? value) (to-string nil)
-              match (try-decode-map-as value triadica.core/DotScalar)
-                (:ok scalar)
-                  match scalar
-                    (String text) (to-string text)
-                    (Tag tag) (to-string tag)
-                    (Number number) (to-string number)
-                    (Bool boolean) (to-string boolean)
-                    (Symbol symbol) (to-string symbol)
-                (:err _)
-                  raise "|DOT values must be scalar text, tags, numbers, booleans, symbols or nil"
+            format-scalar $ read-scalar value
           :examples $ []
           :schema $ quote $ Fn Dynamic (-> String)
+        'format-scalar $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn format-scalar (value)
+            match value
+              (:none) (to-string nil)
+              (:some scalar)
+                match scalar
+                  (String text) (to-string text)
+                  (Tag tag) (to-string tag)
+                  (Number number) (to-string number)
+                  (Bool boolean) (to-string boolean)
+                  (Symbol symbol) (to-string symbol)
+          :examples $ []
+          :schema $ quote $ Fn (Option triadica.core/DotScalar) (-> String)
         'graph $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn graph (options & children)
             str &newline "|graph {" (render-option-lines options) &newline (join-string children &newline) &newline |} &newline
           :examples $ []
-          :schema $ quote $ Fn Dynamic & String (-> String)
+          :schema $ quote $ Fn Dynamic (& String) (-> String)
         'node $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn node (name options)
             if
@@ -67,16 +70,34 @@
               str "|  " (wrap name) "| [ " (render-options options) "| ]"
           :examples $ []
           :schema $ quote $ Fn String Dynamic (-> String)
-        'render-option-lines $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defn render-option-lines (options)
-            if (nil? options) | $ join-string
-              map
-                map-entries $ decode-map-as options $ Map Tag Dynamic
+        'read-scalar $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn read-scalar (value)
+            if (nil? value) (Option :none)
+              match (try-decode-map-as value triadica.core/DotScalar)
+                (:ok scalar) (Option :some scalar)
+                (:err _)
+                  raise "|DOT values must be scalar text, tags, numbers, booleans, symbols or nil"
+          :examples $ []
+          :schema $ quote $ Fn Dynamic
+            -> $ Option triadica.core/DotScalar
+        'render-attributes $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn render-attributes (options assignment separator)
+            join-string
+              map (map-entries options)
                 fn (entry)
+                  hint-fn $ Fn (MapEntry Tag Dynamic) (-> String)
                   str
                     to-string $ :key entry
-                    , "| = " $ wrap $ dot-scalar-text (:value entry)
-              , &newline
+                    , assignment $ wrap $ format-scalar
+                      read-scalar $ :value entry
+              , separator
+          :examples $ []
+          :schema $ quote $ Fn (Map Tag Dynamic) String String (-> String)
+        'render-option-lines $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn render-option-lines (options)
+            if (nil? options) | $ render-attributes
+              decode-map-as options $ Map Tag Dynamic
+              , "| = " &newline
           :examples $ []
           :schema $ quote $ Fn Dynamic (-> String)
           :tests $ [] $ %{} 'TestEntry (:name |graph-attribute-scalars)
@@ -91,15 +112,10 @@
                   , false
                 fn (error) true
         'render-options $ %{} 'CodeEntry (:doc |)
-          :code $ quote $ defn render-options (o)
-            join-string
-              map
-                map-entries $ decode-map-as o $ Map Tag Dynamic
-                fn (entry)
-                  str
-                    to-string $ :key entry
-                    , |= $ wrap $ dot-scalar-text (:value entry)
-              , "| "
+          :code $ quote $ defn render-options (options)
+            render-attributes
+              decode-map-as options $ Map Tag Dynamic
+              , |= "| "
           :examples $ []
           :schema $ quote $ Fn Dynamic (-> String)
           :tests $ [] $ %{} 'TestEntry (:name |formats-typed-attributes)
@@ -109,7 +125,7 @@
         'str-spaced $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn str-spaced (& children) (join-string children "| ")
           :examples $ []
-          :schema $ quote $ Fn & String (-> String)
+          :schema $ quote $ Fn (& String) (-> String)
         'wrap $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn wrap (x)
             if (includes? x "| ") (str "|\"" x "|\"") x
@@ -123,6 +139,11 @@
           :code $ quote $ defref *counter 0
           :examples $ []
           :schema $ quote $ Ref Number
+        'DotTree $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defunion DotTree triadica.core/DotScalar
+            List $ Option DotTree
+          :examples $ []
+          :schema $ quote UnionDef
         'demo-tree $ %{} 'CodeEntry
           :doc "|Explicit ordered teaching tree: group numeric leaves in threes. Demo data only, not Calcit List storage layout."
           :code $ quote $ defn demo-tree (values)
@@ -147,26 +168,57 @@
           :schema $ quote $ Fn (-> Unit)
         'make-data-tree $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn make-data-tree (tree parent-id)
-            if (list? tree)
-              -> tree
-                map $ fn (child)
-                  let
-                      child-id $ if (string? child) (to-string child) (gen-counter-id!)
-                    str (make-data-tree child child-id) &newline
-                      node parent-id $ {} (:shape :diamond) (:style :filled) (:fillcolor :cyan) (:fontcolor :darkturquoise)
-                      arrow parent-id child-id $ {}
-                join-string &newline
-              node (triadica.core/dot-scalar-text tree)
-                {} (:style :filled) (:fillcolor :darkgoldenrod1)
+            match tree
+              (:none)
+                render-leaf $ Option :none
+              (:some value)
+                match value
+                  (List children)
+                    -> children
+                      map $ fn (child)
+                        hint-fn $ Fn (Option triadica.main/DotTree) (-> String)
+                        let
+                            child-id $ match child
+                              (:some next)
+                                match next
+                                  (String text) text
+                                  _ $ gen-counter-id!
+                              (:none) (gen-counter-id!)
+                          str (make-data-tree child child-id) &newline
+                            node parent-id $ {} (:shape :diamond) (:style :filled) (:fillcolor :cyan) (:fontcolor :darkturquoise)
+                            arrow parent-id child-id $ {}
+                      join-string &newline
+                  (String leaf)
+                    render-leaf $ Option :some leaf
+                  (Tag leaf)
+                    render-leaf $ Option :some leaf
+                  (Number leaf)
+                    render-leaf $ Option :some leaf
+                  (Bool leaf)
+                    render-leaf $ Option :some leaf
+                  (Symbol leaf)
+                    render-leaf $ Option :some leaf
           :examples $ []
-          :schema $ quote $ Fn Dynamic String (-> String)
+          :schema $ quote $ Fn (Option triadica.main/DotTree) String (-> String)
         'make-tree-demo $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn make-tree-demo (vec-tree) (reset! *counter 0) (; println |data vec-tree)
             digraph ({})
               node |graph $ {} (:ranksep 0.3) (:nodesep 0.25) (:splines :line)
-              make-data-tree vec-tree $ gen-counter-id!
+              make-data-tree (read-tree vec-tree) (gen-counter-id!)
           :examples $ []
           :schema $ quote $ Fn Dynamic (-> String)
+        'read-tree $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn read-tree (raw)
+            if (list? raw)
+              Option :some $ map
+                decode-map-as raw $ List Dynamic
+                , read-tree
+              match (triadica.core/read-scalar raw)
+                (:none) (Option :none)
+                (:some scalar) (Option :some scalar)
+          :examples $ []
+          :schema $ quote $ Fn Dynamic
+            -> $ Option triadica.main/DotTree
         'reload! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn reload! () (render-demo!)
           :examples $ []
@@ -205,6 +257,12 @@
               assert=
                 [] ([] |0 |1 |2) ([] |3 |4 |5) ([] |6 |7 |8)
                 demo-tree $ range 9
+        'render-leaf $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn render-leaf (value)
+            node (triadica.core/format-scalar value)
+              {} (:style :filled) (:fillcolor :darkgoldenrod1)
+          :examples $ []
+          :schema $ quote $ Fn (Option triadica.core/DotScalar) (-> String)
         'tree-data $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def tree-data
             quote $
