@@ -88,20 +88,17 @@
             render-decoded-attributes
               map (map-entries options)
                 fn (entry)
-                  hint-fn $ Fn (MapEntry Tag Dynamic)
-                    -> $ Tuple Tag $ Option triadica.core/DotScalar
-                  [] (:key entry)
-                    read-scalar $ :value entry
+                  assert-type
+                    [] (:key entry)
+                      read-scalar $ :value entry
+                    Tuple Tag $ Option triadica.core/DotScalar
               , assignment separator
           :examples $ []
-          :schema $ quote $ Fn (Map Tag Dynamic) String String (-> String) (:open :decode)
+          :schema $ quote $ Fn (Map Tag V) String String (-> String) (:generics V)
         'render-decoded-attributes $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-decoded-attributes (attributes assignment separator)
             join-string
               map attributes $ fn (entry)
-                hint-fn $ Fn
-                  Tuple Tag $ Option triadica.core/DotScalar
-                  -> String
                 let[] (key value) entry $ str (to-string key) assignment $ wrap (format-scalar value)
               , separator
           :examples $ []
@@ -191,7 +188,6 @@
                   (List children)
                     -> children
                       map $ fn (child)
-                        hint-fn $ Fn (Option triadica.main/DotTree) (-> String)
                         let
                             child-id $ match child
                               (:some next)
