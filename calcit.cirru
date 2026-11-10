@@ -60,7 +60,7 @@
                   (Bool boolean) (to-string boolean)
                   (Symbol symbol) (to-string symbol)
           :examples $ []
-          :schema $ quote $ Fn (Option triadica.core/DotScalar) (-> String)
+          :schema $ quote $ Fn (Option DotScalar) (-> String)
         'graph $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn graph (options & children)
             str &newline "|graph {" (render-option-lines options) &newline (join-string children &newline) &newline |} &newline
@@ -75,14 +75,13 @@
           :schema $ quote $ Fn String Dynamic (-> String)
         'read-scalar $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn read-scalar (value)
-            if (nil? value) (Option :none)
-              match (try-decode-map-as value triadica.core/DotScalar)
-                (:ok scalar) (Option :some scalar)
-                (:err _)
-                  raise "|DOT values must be scalar text, tags, numbers, booleans, symbols or nil"
+            if (nil? value) None $ match (try-decode-map-as value triadica.core/DotScalar)
+              (:ok scalar) (Some scalar)
+              (:err _)
+                raise "|DOT values must be scalar text, tags, numbers, booleans, symbols or nil"
           :examples $ []
           :schema $ quote $ Fn Dynamic
-            -> $ Option triadica.core/DotScalar
+            -> $ Option DotScalar
         'render-attributes $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-attributes (options assignment separator)
             render-decoded-attributes
@@ -103,7 +102,7 @@
               , separator
           :examples $ []
           :schema $ quote $ Fn
-            List $ Tuple Tag $ Option triadica.core/DotScalar
+            List $ Tuple Tag $ Option DotScalar
             , String String (-> String)
         'render-option-lines $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-option-lines (options)
@@ -151,6 +150,10 @@
           :code $ quote $ defref *counter 0
           :examples $ []
           :schema $ quote $ Ref Number
+        'DemoTree $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defunion DemoTree Number (List DemoTree)
+          :examples $ []
+          :schema $ quote UnionDef
         'DotTree $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defunion DotTree triadica.core/DotScalar
             List $ Option DotTree
@@ -181,8 +184,7 @@
         'make-data-tree $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn make-data-tree (tree parent-id)
             match tree
-              (:none)
-                render-leaf $ Option :none
+              (:none) (render-leaf None)
               (:some value)
                 match value
                   (List children)
@@ -200,17 +202,17 @@
                             arrow parent-id child-id $ {}
                       join-string &newline
                   (String leaf)
-                    render-leaf $ Option :some leaf
+                    render-leaf $ Some leaf
                   (Tag leaf)
-                    render-leaf $ Option :some leaf
+                    render-leaf $ Some leaf
                   (Number leaf)
-                    render-leaf $ Option :some leaf
+                    render-leaf $ Some leaf
                   (Bool leaf)
-                    render-leaf $ Option :some leaf
+                    render-leaf $ Some leaf
                   (Symbol leaf)
-                    render-leaf $ Option :some leaf
+                    render-leaf $ Some leaf
           :examples $ []
-          :schema $ quote $ Fn (Option triadica.main/DotTree) String (-> String)
+          :schema $ quote $ Fn (Option DotTree) String (-> String)
         'make-tree-demo $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn make-tree-demo (vec-tree) (reset! *counter 0) (; println |data vec-tree)
             digraph ({})
@@ -221,15 +223,15 @@
         'read-tree $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn read-tree (raw)
             if (list? raw)
-              Option :some $ map
+              Some $ map
                 decode-map-as raw $ List Dynamic
                 , read-tree
               match (triadica.core/read-scalar raw)
-                (:none) (Option :none)
-                (:some scalar) (Option :some scalar)
+                (:none) None
+                (:some scalar) (Some scalar)
           :examples $ []
           :schema $ quote $ Fn Dynamic
-            -> $ Option triadica.main/DotTree
+            -> $ Option DotTree
         'reload! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn reload! () (render-demo!)
           :examples $ []
@@ -276,18 +278,20 @@
           :schema $ quote $ Fn (Option triadica.core/DotScalar) (-> String)
         'tree-data $ %{} 'CodeEntry (:doc |)
           :code $ quote $ def tree-data
-            quote $
-              0 1 2
-              ((3 4 5) (6 7 8) (9 10 11))
-                (((12 13 14) (15 16 17) (18 19 20)) ((21 22 23) (24 25 26) (27 28 29)) ((30 31 32) (33 34 35) (36 37 38)))
-                  ((39 40 41) (42 43 44) (45 46 47))
-                    (48 49 50) (51 52 53) (54 55 56)
-                    (57 58 59) (60 61 62) (63 64 65)
-                  (66 67 68) (69 70 71) (72 73 74)
-                75 76 77
-              78 79
+            decode-map-as
+              quote $
+                0 1 2
+                ((3 4 5) (6 7 8) (9 10 11))
+                  (((12 13 14) (15 16 17) (18 19 20)) ((21 22 23) (24 25 26) (27 28 29)) ((30 31 32) (33 34 35) (36 37 38)))
+                    ((39 40 41) (42 43 44) (45 46 47))
+                      (48 49 50) (51 52 53) (54 55 56)
+                      (57 58 59) (60 61 62) (63 64 65)
+                    (66 67 68) (69 70 71) (72 73 74)
+                  75 76 77
+                78 79
+              List triadica.main/DemoTree
           :examples $ []
-          :schema $ quote Dynamic
+          :schema $ quote $ List DemoTree
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns triadica.main
           :require
