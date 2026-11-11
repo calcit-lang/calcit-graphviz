@@ -24,30 +24,30 @@
               str "|  " $ str (wrap from) "| -> " $ wrap to
               str "|  " $ str-spaced (wrap from) |-> (wrap to) |[ (render-options options) |]
           :examples $ []
-          :schema $ quote $ Fn String String Dynamic (-> String)
+          :schema $ quote $ Fn String String Options (-> String) (:generics Options)
         'connect $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn connect (from to options)
             if (empty-options? options)
               str "|  " $ str (wrap from) "| -- " $ wrap to
               str "|  " $ str-spaced (wrap from) |-- (wrap to) |[ (render-options options) |]
           :examples $ []
-          :schema $ quote $ Fn String String Dynamic (-> String)
+          :schema $ quote $ Fn String String Options (-> String) (:generics Options)
         'digraph $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn digraph (options & children)
             str &newline "|digraph {" (render-option-lines options) &newline (join-string children &newline) &newline |} &newline
           :examples $ []
-          :schema $ quote $ Fn Dynamic (& String) (-> String)
+          :schema $ quote $ Fn Options (& String) (-> String) (:generics Options)
         'dot-scalar-text $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn dot-scalar-text (value)
             format-scalar $ read-scalar value
           :examples $ []
-          :schema $ quote $ Fn Dynamic (-> String)
+          :schema $ quote $ Fn V (-> String) (:generics V)
         'empty-options? $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn empty-options? (options)
             if (map? options) (&map:empty? options)
               or (nil? options) (empty? options)
           :examples $ []
-          :schema $ quote $ Fn Dynamic (-> Bool) (:open :decode)
+          :schema $ quote $ Fn Options (-> Bool) (:generics Options)
         'format-scalar $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn format-scalar (value)
             match value
@@ -65,14 +65,14 @@
           :code $ quote $ defn graph (options & children)
             str &newline "|graph {" (render-option-lines options) &newline (join-string children &newline) &newline |} &newline
           :examples $ []
-          :schema $ quote $ Fn Dynamic (& String) (-> String)
+          :schema $ quote $ Fn Options (& String) (-> String) (:generics Options)
         'node $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn node (name options)
             if (empty-options? options)
               str "|  " $ wrap name
               str "|  " (wrap name) "| [ " (render-options options) "| ]"
           :examples $ []
-          :schema $ quote $ Fn String Dynamic (-> String)
+          :schema $ quote $ Fn String Options (-> String) (:generics Options)
         'read-scalar $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn read-scalar (value)
             if (nil? value) None $ match (try-decode-map-as value triadica.core/DotScalar)
@@ -80,8 +80,9 @@
               (:err _)
                 raise "|DOT values must be scalar text, tags, numbers, booleans, symbols or nil"
           :examples $ []
-          :schema $ quote $ Fn Dynamic
+          :schema $ quote $ Fn V
             -> $ Option DotScalar
+            :generics V
         'render-attributes $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-attributes (options assignment separator)
             render-decoded-attributes
@@ -110,7 +111,7 @@
               decode-map-as options $ Map Tag Dynamic
               , "| = " &newline
           :examples $ []
-          :schema $ quote $ Fn Dynamic (-> String)
+          :schema $ quote $ Fn Options (-> String) (:generics Options)
           :tests $ [] $ %{} 'TestEntry (:name |graph-attribute-scalars)
             :code $ quote $ do
               assert= "|rankdir = LR" $ render-option-lines $ {} (:rankdir :LR)
@@ -128,7 +129,7 @@
               decode-map-as options $ Map Tag Dynamic
               , |= "| "
           :examples $ []
-          :schema $ quote $ Fn Dynamic (-> String)
+          :schema $ quote $ Fn Options (-> String) (:generics Options)
           :tests $ [] $ %{} 'TestEntry (:name |formats-typed-attributes)
             :code $ quote $ do
               assert= |color=red $ render-options $ {} (:color :red)
@@ -219,7 +220,7 @@
               node |graph $ {} (:ranksep 0.3) (:nodesep 0.25) (:splines :line)
               make-data-tree (read-tree vec-tree) (gen-counter-id!)
           :examples $ []
-          :schema $ quote $ Fn Dynamic (-> String)
+          :schema $ quote $ Fn T (-> String) (:generics T)
         'read-tree $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn read-tree (raw)
             if (list? raw)
@@ -230,8 +231,9 @@
                 (:none) None
                 (:some scalar) (Some scalar)
           :examples $ []
-          :schema $ quote $ Fn Dynamic
+          :schema $ quote $ Fn T
             -> $ Option DotTree
+            :generics T
         'reload! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn reload! () (render-demo!)
           :examples $ []
