@@ -91,7 +91,7 @@
                   assert-type
                     [] (:key entry)
                       read-scalar $ :value entry
-                    Tuple Tag $ Option triadica.core/DotScalar
+                    Tuple Tag $ Option DotScalar
               , assignment separator
           :examples $ []
           :schema $ quote $ Fn (Map Tag V) String String (-> String) (:generics V)
