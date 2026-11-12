@@ -4,7 +4,7 @@
 
 ## 对使用者的影响
 
-0.0.16 候选配对正式 Calcit / `@calcit/procs` **0.41.1** 与已发布 `calcit.std` **0.2.54**，需同步工具链并重新生成 JS。
+0.0.16 候选配对正式 Calcit / `@calcit/procs` **0.42.1** 与已发布 `calcit.std` **0.2.54**，需同步工具链并重新生成 JS。
 候选尚未发布，旧 tag 不移动；本 PR 仅上传隔离前端预览，不合并或生产部署。
 DOT 图、节点、边的调用和属性格式沿用原版本。直接调用 `triadica.main/make-data-tree` 时使用 `Option DotTree`；`make-tree-demo` 继续接收原树数据。
 
@@ -18,7 +18,7 @@ DOT 的五种非空标量通过 `DotScalar = String | Tag | Number | Bool | Symb
 原未实现的 native render-dot-file 桥已退役，不重新引入占位接口。
 
 图级 Tag 属性仍生成 `rankdir = LR`，含空格的标签按原规则加引号；这不是完整 DOT 转义，外部文本仍需验证。
-外部属性 Map 先按原顺序解码为 Tag 与 `Option<DotScalar>` 的键值对，渲染只接收这一具体类型。nil 属性仍按空值格式化。
+图级与节点、边属性共用一个外部 Map 解码入口，按原顺序转换为 Tag 与 `Option<DotScalar>` 的键值对。渲染接收这一具体类型，旧 nil 属性仍输出空值。
 节点与边直接检查 Map 是否为空，保留旧输入的空值判断行为。
 
 Demo 使用显式三叶分组数据，生成 0 到 9 个叶子的十帧，不把 FingerVec 调试文本当作内部树结构。
@@ -26,7 +26,7 @@ Demo 使用显式三叶分组数据，生成 0 到 9 个叶子的十帧，不把
 
 ## 开发与验收
 
-使用 Node.js 24、Yarn 4.18.0、Graphviz 和配对 Calcit 0.41.1。
+使用 Node.js 24、Yarn 4.18.0、Graphviz 和配对 Calcit 0.42.1。
 
 ```sh
 caps --strict --ci

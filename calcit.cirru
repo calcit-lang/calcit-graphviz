@@ -32,6 +32,18 @@
               str "|  " $ str-spaced (wrap from) |-- (wrap to) |[ (render-options options) |]
           :examples $ []
           :schema $ quote $ Fn String String Options (-> String) (:generics Options)
+        'decode-attributes $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn decode-attributes (options)
+            map (map-entries options)
+              fn (entry)
+                assert-type
+                  [] (:key entry)
+                    read-scalar $ :value entry
+                  Tuple Tag $ Option DotScalar
+          :examples $ []
+          :schema $ quote $ Fn (Map Tag V)
+            -> $ List $ Tuple Tag (Option DotScalar)
+            :generics V
         'digraph $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn digraph (options & children)
             str &newline "|digraph {" (render-option-lines options) &newline (join-string children &newline) &newline |} &newline
@@ -51,7 +63,7 @@
         'format-scalar $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn format-scalar (value)
             match value
-              (:none) (to-string nil)
+              (:none) |
               (:some scalar)
                 match scalar
                   (String text) (to-string text)
@@ -73,6 +85,13 @@
               str "|  " (wrap name) "| [ " (render-options options) "| ]"
           :examples $ []
           :schema $ quote $ Fn String Options (-> String) (:generics Options)
+        'read-attributes $ %{} 'CodeEntry (:doc |)
+          :code $ quote $ defn read-attributes (raw)
+            decode-attributes $ decode-map-as raw $ Map Tag Dynamic
+          :examples $ []
+          :schema $ quote $ Fn Raw
+            -> $ List $ Tuple Tag (Option DotScalar)
+            :generics Raw
         'read-scalar $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn read-scalar (value)
             if (nil? value) None $ match (try-decode-map-as value triadica.core/DotScalar)
@@ -85,14 +104,7 @@
             :generics V
         'render-attributes $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-attributes (options assignment separator)
-            render-decoded-attributes
-              map (map-entries options)
-                fn (entry)
-                  assert-type
-                    [] (:key entry)
-                      read-scalar $ :value entry
-                    Tuple Tag $ Option DotScalar
-              , assignment separator
+            render-decoded-attributes (decode-attributes options) assignment separator
           :examples $ []
           :schema $ quote $ Fn (Map Tag V) String String (-> String) (:generics V)
         'render-decoded-attributes $ %{} 'CodeEntry (:doc |)
@@ -107,9 +119,7 @@
             , String String (-> String)
         'render-option-lines $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-option-lines (options)
-            if (nil? options) | $ render-attributes
-              decode-map-as options $ Map Tag Dynamic
-              , "| = " &newline
+            if (nil? options) | $ render-decoded-attributes (read-attributes options) "| = " &newline
           :examples $ []
           :schema $ quote $ Fn Options (-> String) (:generics Options)
           :tests $ [] $ %{} 'TestEntry (:name |graph-attribute-scalars)
@@ -125,9 +135,7 @@
                 fn (error) true
         'render-options $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-options (options)
-            render-attributes
-              decode-map-as options $ Map Tag Dynamic
-              , |= "| "
+            render-decoded-attributes (read-attributes options) |= "| "
           :examples $ []
           :schema $ quote $ Fn Options (-> String) (:generics Options)
           :tests $ [] $ %{} 'TestEntry (:name |formats-typed-attributes)
@@ -177,11 +185,11 @@
             reset! *counter $ inc @*counter
             str |p @*counter
           :examples $ []
-          :schema $ quote $ Fn (-> String)
+          :schema $ quote $ Fn (-> String) (:features :state)
         'main! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn main! () (render-demo!)
           :examples $ []
-          :schema $ quote $ Fn (-> Unit)
+          :schema $ quote $ Fn (-> Unit) (:features :io :state)
         'make-data-tree $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn make-data-tree (tree parent-id)
             match tree
@@ -213,14 +221,14 @@
                   (Symbol leaf)
                     render-leaf $ Some leaf
           :examples $ []
-          :schema $ quote $ Fn (Option DotTree) String (-> String)
+          :schema $ quote $ Fn (Option DotTree) String (-> String) (:features :state)
         'make-tree-demo $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn make-tree-demo (vec-tree) (reset! *counter 0) (; println |data vec-tree)
             digraph ({})
               node |graph $ {} (:ranksep 0.3) (:nodesep 0.25) (:splines :line)
               make-data-tree (read-tree vec-tree) (gen-counter-id!)
           :examples $ []
-          :schema $ quote $ Fn T (-> String) (:generics T)
+          :schema $ quote $ Fn T (-> String) (:generics T) (:features :state)
         'read-tree $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn read-tree (raw)
             if (list? raw)
@@ -237,15 +245,9 @@
         'reload! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn reload! () (render-demo!)
           :examples $ []
-          :schema $ quote $ Fn (-> Unit)
+          :schema $ quote $ Fn (-> Unit) (:features :io :state)
         'render-demo! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn render-demo! ()
-            ; write-file |output/demo.dot $ w-log $ digraph nil (node |A)
-              node |B $ {} (:color :red) (:shape :diamond)
-              node |C $ {} (:style :filled) (:fillcolor :red) (:fontcolor :white) (:color :none)
-              arrow |A |B $ {} $ :arrowhead :inv
-              arrow |A |C $ {}
-              arrow |A |E $ {}
             loop
                 acc $ range 0
                 n 0
@@ -254,11 +256,11 @@
                   write-file |output/demo.dot $ make-tree-demo $ demo-tree acc
                   println n |result: $ execute! $ [] |dot |-T |svg |-K |dot |output/demo.dot |-o (str |output/demo n |.svg)
                   recur (conj acc n) (inc n)
-                , nil
+                , &unit
             ; write-file |output/demo.dot $ make-tree-demo tree-data
             , &unit
           :examples $ []
-          :schema $ quote $ Fn (-> Unit)
+          :schema $ quote $ Fn (-> Unit) (:features :io :state)
           :tests $ [] $ %{} 'TestEntry (:name |formats-list-accumulator)
             :code $ quote $ do
               assert= ([])
@@ -306,7 +308,7 @@
             println $ digraph $ {} (:type :graph)
             , &unit
           :examples $ []
-          :schema $ quote $ Fn (-> Unit)
+          :schema $ quote $ Fn (-> Unit) (:features :io)
       :ns $ %{} 'NsEntry (:doc |)
         :code $ quote $ ns triadica.test
           :require
