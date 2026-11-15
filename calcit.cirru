@@ -229,12 +229,12 @@
               make-data-tree (read-tree vec-tree) (gen-counter-id!)
           :examples $ []
           :schema $ quote $ Fn T (-> String) (:generics T) (:features :state)
-        'read-tree $ %{} 'CodeEntry (:doc |)
+        'read-tree $ %{} 'CodeEntry
+          :doc "|Read raw tree data into the DotTree union. List items decode individually to Option DotTree so nil becomes None and the function no longer decodes a List Dynamic."
           :code $ quote $ defn read-tree (raw)
             if (list? raw)
-              Some $ map
-                decode-map-as raw $ List Dynamic
-                , read-tree
+              Some $ map raw $ fn (item)
+                if (nil? item) None $ Some $ decode-map-as item 'DotTree
               match (triadica.core/read-scalar raw)
                 (:none) None
                 (:some scalar) (Some scalar)
@@ -242,6 +242,17 @@
           :schema $ quote $ Fn T
             -> $ Option DotTree
             :generics T
+          :tests $ [] $ %{} 'TestEntry (:name |union-tree-shape)
+            :code $ quote $ do
+              assert=
+                Some $ [] (Some |leaf) None
+                read-tree $ [] |leaf nil
+              assert=
+                Some $ [] $ Some
+                  [] $ Some |nested
+                read-tree $ [] $ [] |nested
+              assert= None $ read-tree nil
+            :tags $ #{} :unit
         'reload! $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn reload! () (render-demo!)
           :examples $ []
