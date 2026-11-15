@@ -85,13 +85,25 @@
               str "|  " (wrap name) "| [ " (render-options options) "| ]"
           :examples $ []
           :schema $ quote $ Fn String Options (-> String) (:generics Options)
-        'read-attributes $ %{} 'CodeEntry (:doc |)
+        'read-attributes $ %{} 'CodeEntry
+          :doc "|Decode a raw DOT attribute map as DotScalar values. Absent attributes should be omitted; nil values are rejected instead of being rendered as empty strings."
           :code $ quote $ defn read-attributes (raw)
-            decode-attributes $ decode-map-as raw $ Map Tag Dynamic
+            decode-attributes $ decode-map-as raw $ Map Tag DotScalar
           :examples $ []
           :schema $ quote $ Fn Raw
             -> $ List $ Tuple Tag (Option DotScalar)
             :generics Raw
+          :tests $ [] $ %{} 'TestEntry (:name |scalar-attribute-map)
+            :code $ quote $ do
+              assert=
+                [] $ [] :rankdir $ Some :LR
+                read-attributes $ {} $ :rankdir :LR
+              assert |nil-attribute-rejected $ try
+                do
+                  read-attributes $ {} $ :label nil
+                  , false
+                fn (error) true
+            :tags $ #{} :unit
         'read-scalar $ %{} 'CodeEntry (:doc |)
           :code $ quote $ defn read-scalar (value)
             if (nil? value) None $ match (try-decode-map-as value triadica.core/DotScalar)
