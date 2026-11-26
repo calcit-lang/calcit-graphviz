@@ -4,7 +4,7 @@
 
 ## 对使用者的影响
 
-当前源码配对正式 Calcit / `@calcit/procs` **0.46.0** 与已发布 `calcit.std` **0.2.59**，需同步工具链并重新生成 JS。
+当前源码配对正式 Calcit / `@calcit/procs` **0.46.0** 与已发布 `calcit.std` **0.2.60**，需同步工具链并重新生成 JS。
 当前源码尚未发布为新 tag；使用已发布版本时请按对应 tag 的工具链说明配对。
 DOT 图、节点、边的调用和属性格式沿用原版本。直接调用 `triadica.main/make-data-tree` 时使用 `Option DotTree`；`make-tree-demo` 继续接收原树数据。
 
