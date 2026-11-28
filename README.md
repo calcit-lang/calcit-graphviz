@@ -4,7 +4,7 @@
 
 ## 对使用者的影响
 
-当前源码配对正式 Calcit / `@calcit/procs` **0.46.0** 与已发布 `calcit.std` **0.2.60**，需同步工具链并重新生成 JS。
+当前源码配对正式 Calcit / `@calcit/procs` **0.47.1** 与已发布 `calcit.std` **0.2.61**，需同步工具链并重新生成 JS。
 当前源码尚未发布为新 tag；使用已发布版本时请按对应 tag 的工具链说明配对。
 DOT 图、节点、边的调用和属性格式沿用原版本。直接调用 `triadica.main/make-data-tree` 时使用 `Option DotTree`；`make-tree-demo` 继续接收原树数据。
 
@@ -26,7 +26,7 @@ Demo 使用显式三叶分组数据，生成 0 到 9 个叶子的十帧，不把
 
 ## 开发与验收
 
-使用 Node.js 24、Yarn 4.18.0、Graphviz 和配对 Calcit 0.46.0。
+使用 Node.js 24、Yarn 4.18.0、Graphviz 和配对 Calcit 0.47.1。
 
 ```sh
 caps --strict --ci
